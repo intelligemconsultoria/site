@@ -10,9 +10,10 @@ import { toast } from "sonner@2.0.3";
 
 interface BlogPageProps {
   onBack: () => void;
+  onNavigateToArticle?: (slug: string) => void;
 }
 
-export function BlogPage({ onBack }: BlogPageProps) {
+export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
   const [newsletterEmail, setNewsletterEmail] = useState("");
@@ -158,7 +159,10 @@ export function BlogPage({ onBack }: BlogPageProps) {
                       {featuredArticle.read_time}
                     </div>
                   </div>
-                  <Button className="bg-emerald-400 text-black hover:bg-emerald-500">
+                  <Button 
+                    className="bg-emerald-400 text-black hover:bg-emerald-500"
+                    onClick={() => onNavigateToArticle?.(featuredArticle.slug)}
+                  >
                     Ler Artigo Completo
                   </Button>
                 </div>
@@ -204,6 +208,7 @@ export function BlogPage({ onBack }: BlogPageProps) {
               <Card
                 key={index}
                 className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group overflow-hidden cursor-pointer"
+                onClick={() => onNavigateToArticle?.(article.slug)}
               >
                 <div className="relative overflow-hidden">
                   <ImageWithFallback

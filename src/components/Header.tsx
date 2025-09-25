@@ -5,7 +5,7 @@ interface HeaderProps {
   onNavigateToAdmin?: () => void;
 }
 
-export function Header({ onNavigateToAdmin }: HeaderProps) {
+export function Header({ onNavigateToAdmin }: HeaderProps = {}) {
   return (
     <header className="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
@@ -15,8 +15,6 @@ export function Header({ onNavigateToAdmin }: HeaderProps) {
             src={intelligemLogo} 
             alt="IntelliGem" 
             className="w-10 h-10"
-            onDoubleClick={onNavigateToAdmin}
-            style={{ cursor: onNavigateToAdmin ? 'pointer' : 'default' }}
           />
           <span className="text-white font-semibold text-xl">IntelliGem</span>
         </div>

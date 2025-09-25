@@ -4,9 +4,10 @@ import { Button } from "./ui/button";
 
 interface BlogSectionProps {
   onNavigateToBlog?: () => void;
+  onNavigateToArticle?: (slug: string) => void;
 }
 
-export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
+export function BlogSection({ onNavigateToBlog, onNavigateToArticle }: BlogSectionProps) {
   const articles = [
     {
       title: "O Futuro da Análise de Dados: Tendências para 2025",
@@ -15,7 +16,8 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
       date: "15 Jan 2025",
       read_time: "8 min",
       category: "Tendências",
-      image_url: "https://images.unsplash.com/photo-1740908900846-4bbd4f22c975?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhJTIwc2NpZW5jZSUyMGJsb2d8ZW58MXx8fHwxNzU4NTc5NzcwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+      image_url: "https://images.unsplash.com/photo-1740908900846-4bbd4f22c975?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhJTIwc2NpZW5jZSUyMGJsb2d8ZW58MXx8fHwxNzU4NTc5NzcwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      slug: "futuro-analise-dados-2025"
     },
     {
       title: "IA Generativa nos Negócios: Além do Hype",
@@ -24,7 +26,8 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
       date: "10 Jan 2025",
       read_time: "12 min",
       category: "Inteligência Artificial",
-      image_url: "https://images.unsplash.com/photo-1674027215001-9210851de177?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlJTIwZnV0dXJlfGVufDF8fHx8MTc1ODU0NzQyMnww&ixlib=rb-4.1.0&q=80&w=1080"
+      image_url: "https://images.unsplash.com/photo-1674027215001-9210851de177?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlJTIwZnV0dXJlfGVufDF8fHx8MTc1ODU0NzQyMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      slug: "ia-generativa-negocios"
     },
     {
       title: "Automação Inteligente: ROI e Implementação",
@@ -33,7 +36,8 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
       date: "05 Jan 2025",
       read_time: "6 min",
       category: "Automação",
-      image_url: "https://images.unsplash.com/photo-1647427060118-4911c9821b82?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMGF1dG9tYXRpb24lMjB0cmVuZHN8ZW58MXx8fHwxNzU4NTc5Nzc2fDA&ixlib=rb-4.1.0&q=80&w=1080"
+      image_url: "https://images.unsplash.com/photo-1647427060118-4911c9821b82?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMGF1dG9tYXRpb24lMjB0cmVuZHN8ZW58MXx8fHwxNzU4NTc5Nzc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      slug: "automacao-inteligente-roi"
     }
   ];
 
@@ -56,6 +60,7 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
             <Card 
               key={index}
               className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group overflow-hidden cursor-pointer"
+              onClick={() => onNavigateToArticle?.(article.slug)}
             >
               <div className="relative overflow-hidden">
                 <ImageWithFallback

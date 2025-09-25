@@ -14,9 +14,13 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 function createSlug(title) {
   return title
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .trim();
+    .normalize('NFD') // Normalizar caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, '') // Remover acentos
+    .replace(/[^\w\s-]/g, '') // Remover caracteres especiais
+    .replace(/\s+/g, '-') // Substituir espaços por hífens
+    .replace(/-+/g, '-') // Remover hífens duplicados
+    .trim()
+    .replace(/^-+|-+$/g, ''); // Remover hífens do início e fim
 }
 
 // Função para calcular tempo de leitura
@@ -47,8 +51,30 @@ exports.handler = async (event, context) => {
 
   try {
     const { httpMethod, path } = event;
+    console.log('🔍 Requisição recebida:', { httpMethod, path });
     const pathSegments = path.split('/').filter(Boolean);
-    const endpoint = pathSegments[pathSegments.length - 1];
+    let endpoint = pathSegments[pathSegments.length - 1];
+    console.log('📍 Path segments:', pathSegments, 'Endpoint inicial:', endpoint);
+    
+    // Para rotas com ID (ex: articles/123), determinar o endpoint correto
+    if (pathSegments.length > 1) {
+      const lastSegment = pathSegments[pathSegments.length - 1];
+      const secondLastSegment = pathSegments[pathSegments.length - 2];
+      
+      // Se o último segmento é um UUID ou número, usar o penúltimo como endpoint
+      // Mas NÃO tratar slugs de artigos como IDs
+      if (lastSegment.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) || 
+          lastSegment.match(/^\d+$/)) {
+        endpoint = secondLastSegment;
+      }
+      // Se não é um endpoint conhecido e não é um ID, pode ser um slug de artigo
+      else if (!['articles', 'published', 'featured', 'categories', 'stats', 'subscribers'].includes(lastSegment)) {
+        endpoint = lastSegment; // Manter o slug como endpoint
+        console.log('📄 Slug detectado, endpoint final:', endpoint);
+      }
+    }
+
+    console.log('🎯 Endpoint final:', endpoint, 'Método:', httpMethod);
 
     // Roteamento baseado no método HTTP e endpoint
     switch (httpMethod) {
@@ -99,6 +125,7 @@ async function handleGet(endpoint, event, headers) {
       default:
         // Se não for um endpoint específico, pode ser um slug de artigo
         if (endpoint && endpoint !== 'blog') {
+          console.log('📄 Buscando artigo por slug:', endpoint);
           return await getArticleBySlug(endpoint, headers);
         }
         return {
@@ -256,13 +283,18 @@ async function getPublishedArticles(headers) {
 
 async function getArticleBySlug(slug, headers) {
   try {
+    console.log('🔍 Buscando artigo com slug:', slug);
+    
     const { data, error } = await supabase
       .from('articles')
       .select('*')
       .eq('slug', slug)
       .single();
     
+    console.log('📊 Resultado da busca:', { data, error });
+    
     if (error) {
+      console.log('❌ Erro na busca:', error.code, error.message);
       if (error.code === 'PGRST116') {
         return {
           statusCode: 404,
@@ -273,13 +305,14 @@ async function getArticleBySlug(slug, headers) {
       throw error;
     }
     
+    console.log('✅ Artigo encontrado:', data.title);
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify(data)
     };
   } catch (error) {
-    console.error('Erro ao buscar artigo por slug:', error);
+    console.error('❌ Erro ao buscar artigo por slug:', error);
     return {
       statusCode: 500,
       headers,
@@ -396,7 +429,10 @@ async function createArticle(articleData, headers) {
     
     const { data, error } = await supabase
       .from('articles')
-      .insert([article])
+      .upsert([article], { 
+        onConflict: 'slug',
+        ignoreDuplicates: false 
+      })
       .select()
       .single();
     

@@ -28,17 +28,15 @@ class BlogService {
   private baseUrl = this.getBaseUrl();
 
   private getBaseUrl(): string {
-    // Em desenvolvimento, usa o servidor de teste
-    if (import.meta.env.DEV) {
-      return 'http://localhost:3001/api';
-    }
-    // Em produção, usa as Netlify Functions
+    // Sempre usa as Netlify Functions (tanto em dev quanto em produção)
     return '/.netlify/functions/blog';
   }
 
   // Método auxiliar para fazer requisições HTTP
   private async makeRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
     const url = `${this.baseUrl}/${endpoint}`;
+    console.log('🌐 Fazendo requisição para:', url);
+    
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -47,12 +45,23 @@ class BlogService {
       ...options
     });
 
+    console.log('📡 Resposta recebida:', { status: response.status, ok: response.ok });
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('❌ Erro na resposta:', errorData);
       throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
     }
 
-    return response.json();
+    try {
+      const result = await response.json();
+      console.log('✅ JSON parseado com sucesso:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Erro ao fazer parse do JSON:', error);
+      console.log('📄 Conteúdo da resposta:', await response.text());
+      throw new Error('Resposta não é um JSON válido');
+    }
   }
 
   // Métodos para artigos
@@ -94,10 +103,13 @@ class BlogService {
   }
 
   async createArticle(article: Omit<BlogArticle, 'id' | 'created_at' | 'updated_at'>): Promise<BlogArticle> {
-    return this.makeRequest('articles', {
+    console.log('📤 blogService.createArticle chamado:', { title: article.title, published: article.published });
+    const result = await this.makeRequest('articles', {
       method: 'POST',
       body: JSON.stringify(article)
     });
+    console.log('📥 blogService.createArticle retornou:', result);
+    return result;
   }
 
   async updateArticle(id: string, updates: Partial<BlogArticle>): Promise<BlogArticle | null> {
