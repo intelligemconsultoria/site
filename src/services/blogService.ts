@@ -25,7 +25,16 @@ export interface NewsletterSubscriber {
 }
 
 class BlogService {
-  private baseUrl = 'http://localhost:3001/api';
+  private baseUrl = this.getBaseUrl();
+
+  private getBaseUrl(): string {
+    // Em desenvolvimento, usa o servidor de teste
+    if (import.meta.env.DEV) {
+      return 'http://localhost:3001/api';
+    }
+    // Em produção, usa as Netlify Functions
+    return '/.netlify/functions/blog';
+  }
 
   // Método auxiliar para fazer requisições HTTP
   private async makeRequest(endpoint: string, options: RequestInit = {}): Promise<any> {

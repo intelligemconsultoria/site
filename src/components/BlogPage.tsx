@@ -129,7 +129,7 @@ export function BlogPage({ onBack }: BlogPageProps) {
               <div className="lg:flex">
                 <div className="lg:w-1/2">
                   <ImageWithFallback
-                    src={featuredArticle.image}
+                    src={featuredArticle.image_url}
                     alt={featuredArticle.title}
                     className="w-full h-64 lg:h-full object-cover"
                   />
@@ -207,7 +207,7 @@ export function BlogPage({ onBack }: BlogPageProps) {
               >
                 <div className="relative overflow-hidden">
                   <ImageWithFallback
-                    src={article.image}
+                    src={article.image_url}
                     alt={article.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
