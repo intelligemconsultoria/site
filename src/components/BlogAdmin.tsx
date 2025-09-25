@@ -42,7 +42,7 @@ export function BlogAdmin({ onBack }: BlogAdminProps) {
     content: '',
     author: '',
     category: '',
-    image: '',
+    image_url: '',
     featured: false,
     published: false,
     tags: ''
@@ -76,7 +76,7 @@ export function BlogAdmin({ onBack }: BlogAdminProps) {
       content: '',
       author: '',
       category: '',
-      image: '',
+      image_url: '',
       featured: false,
       published: false,
       tags: ''
@@ -92,7 +92,7 @@ export function BlogAdmin({ onBack }: BlogAdminProps) {
       content: article.content,
       author: article.author,
       category: article.category,
-      image: article.image,
+      image_url: article.image_url,
       featured: article.featured,
       published: article.published,
       tags: article.tags.join(', ')
@@ -110,7 +110,7 @@ export function BlogAdmin({ onBack }: BlogAdminProps) {
           .replace(/[^\w\s-]/g, '')
           .replace(/\s+/g, '-'),
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        readTime: `${Math.ceil(formData.content.length / 1000)} min`
+        read_time: `${Math.ceil(formData.content.length / 1000)} min`
       };
 
       if (editingArticle) {
@@ -285,8 +285,8 @@ export function BlogAdmin({ onBack }: BlogAdminProps) {
                     <Label htmlFor="image" className="text-white">URL da Imagem</Label>
                     <Input
                       id="image"
-                      value={formData.image}
-                      onChange={(e) => setFormData({...formData, image: e.target.value})}
+                      value={formData.image_url}
+                        onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                       className="bg-white/10 border-white/20 text-white"
                       placeholder="https://..."
                     />
@@ -367,7 +367,7 @@ export function BlogAdmin({ onBack }: BlogAdminProps) {
                           <span>Por {article.author}</span>
                           <span>{article.date}</span>
                           <span>{article.category}</span>
-                          <span>{article.readTime}</span>
+                          <span>{article.read_time}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-4">

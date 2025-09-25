@@ -22,13 +22,20 @@ Uma interface web moderna e profissional para a empresa IntelliGem, especializad
 - **Forms**: React Hook Form
 - **Notifications**: Sonner
 
+### Backend
+- **Netlify Functions**: Serverless functions
+- **Supabase**: Banco de dados PostgreSQL serverless
+- **Node.js**: Runtime para as funções
+
 ## 🚀 Como Executar
 
 ### Pré-requisitos
 - Node.js 18+ 
 - npm ou yarn
+- Conta no Supabase
+- Conta no Netlify
 
-### Instalação
+### 1. Instalação
 ```bash
 # Clone o repositório
 git clone https://github.com/[seu-usuario]/site.git
@@ -38,12 +45,50 @@ cd site
 
 # Instale as dependências
 npm install
+```
 
-# Execute o servidor de desenvolvimento
+### 2. Configuração do Supabase
+1. Crie uma conta em [supabase.com](https://supabase.com)
+2. Crie um novo projeto
+3. Execute o SQL do arquivo `supabase/schema.sql` no SQL Editor
+4. Obtenha suas credenciais (URL e chave anônima)
+
+### 3. Configurar Variáveis de Ambiente
+No Netlify Dashboard:
+- `SUPABASE_URL` = sua URL do projeto
+- `SUPABASE_ANON_KEY` = sua chave anônima
+
+### 4. Inicializar Dados
+```bash
+# Configure localmente (apenas para inicialização)
+export SUPABASE_URL=sua_url_do_supabase
+export SUPABASE_ANON_KEY=sua_chave_anonima
+
+# Execute o script de inicialização
+npm run init:supabase
+```
+
+### 5. Desenvolvimento Local
+```bash
+# Modo de desenvolvimento padrão
 npm run dev
+
+# Modo de desenvolvimento com Netlify Functions
+npm run netlify:dev
 ```
 
 O projeto estará disponível em `http://localhost:3000`
+
+## 🔧 Scripts Disponíveis
+
+```bash
+npm run dev              # Desenvolvimento com Vite
+npm run build            # Build para produção
+npm run netlify:dev      # Desenvolvimento com Netlify Functions
+npm run netlify:build    # Build com Netlify
+npm run init:supabase    # Inicializar banco de dados
+npm run deploy           # Deploy para produção
+```
 
 ## 📁 Estrutura do Projeto
 
@@ -87,6 +132,23 @@ src/
 - Interface para gerenciar artigos
 - Estatísticas do blog
 - Gerenciamento de newsletter
+
+## 🚨 Troubleshooting
+
+### Erro: "SUPABASE_URL não encontrado"
+- Verifique se as variáveis estão configuradas no Netlify
+- Para desenvolvimento local: `export SUPABASE_URL=sua_url`
+
+### Erro: "relation 'articles' does not exist"
+- Execute o SQL do `supabase/schema.sql` no Supabase Dashboard
+
+### Erro: "Function not found"
+- Verifique se está executando com `npm run netlify:dev`
+- Para produção, certifique-se de que as funções estão deployadas
+
+## 📚 Documentação Adicional
+
+- [Configuração do Supabase](SUPABASE_SETUP.md) - Guia detalhado de configuração
 
 ## 🚀 Deploy
 

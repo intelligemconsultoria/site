@@ -155,7 +155,7 @@ export function BlogPage({ onBack }: BlogPageProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4" />
-                      {featuredArticle.readTime}
+                      {featuredArticle.read_time}
                     </div>
                   </div>
                   <Button className="bg-emerald-400 text-black hover:bg-emerald-500">
@@ -227,7 +227,7 @@ export function BlogPage({ onBack }: BlogPageProps) {
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {article.readTime}
+                      {article.read_time}
                     </div>
                   </div>
 

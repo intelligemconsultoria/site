@@ -13,7 +13,7 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
       excerpt: "Explore as principais tendências que moldarão o cenário de dados nos próximos anos, desde IA generativa até automação inteligente.",
       author: "Equipe IntelliGem",
       date: "15 Jan 2025",
-      readTime: "8 min",
+      read_time: "8 min",
       category: "Tendências",
       image: "https://images.unsplash.com/photo-1740908900846-4bbd4f22c975?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkYXRhJTIwc2NpZW5jZSUyMGJsb2d8ZW58MXx8fHwxNzU4NTc5NzcwfDA&ixlib=rb-4.1.0&q=80&w=1080"
     },
@@ -22,7 +22,7 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
       excerpt: "Como empresas estão realmente aplicando IA generativa para resolver problemas concretos e gerar valor mensurável.",
       author: "Dr. Ana Silva",
       date: "10 Jan 2025",
-      readTime: "12 min",
+      read_time: "12 min",
       category: "Inteligência Artificial",
       image: "https://images.unsplash.com/photo-1674027215001-9210851de177?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlJTIwZnV0dXJlfGVufDF8fHx8MTc1ODU0NzQyMnww&ixlib=rb-4.1.0&q=80&w=1080"
     },
@@ -31,7 +31,7 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
       excerpt: "Guia prático para calcular o retorno de investimento em automação e as melhores práticas de implementação.",
       author: "Carlos Roberto",
       date: "05 Jan 2025",
-      readTime: "6 min",
+      read_time: "6 min",
       category: "Automação",
       image: "https://images.unsplash.com/photo-1647427060118-4911c9821b82?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMGF1dG9tYXRpb24lMjB0cmVuZHN8ZW58MXx8fHwxNzU4NTc5Nzc2fDA&ixlib=rb-4.1.0&q=80&w=1080"
     }
@@ -74,7 +74,7 @@ export function BlogSection({ onNavigateToBlog }: BlogSectionProps) {
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center justify-between text-xs text-white/60">
                   <span>{article.date}</span>
-                  <span>{article.readTime} de leitura</span>
+                  <span>{article.read_time} de leitura</span>
                 </div>
 
                 <h3 className="text-white text-xl leading-tight group-hover:text-emerald-400 transition-colors">
