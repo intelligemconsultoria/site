@@ -91,7 +91,7 @@ src/
 ## 🚀 Deploy
 
 O projeto está configurado para deploy em:
-- **Netlify**: `npm run build` e deploy da pasta `build`
+- **Netlify**: `npm run build` e deploy da pasta `dist` (configuração automática via `netlify.toml`)
 - **Vercel**: Deploy automático via GitHub
 - **GitHub Pages**: Configuração manual necessária
 
