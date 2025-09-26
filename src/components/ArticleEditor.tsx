@@ -13,6 +13,7 @@ import {
 import { BlogArticle, blogService } from '../services/blogService'
 import { toast } from 'sonner'
 import DOMPurify from 'dompurify'
+import { ThemeToggle } from './ThemeToggle'
 
 /**
  * Medium‑like editor (WYSIWYG) mantendo o design dark/emerald da IntelliGem.
@@ -522,18 +523,19 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
         }
       `}</style>
       
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen bg-white dark:bg-background text-gray-900 dark:text-foreground">
       {/* Header minimalista */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b border-border">
+      <div className="sticky top-0 z-10 bg-white/80 dark:bg-background/80 backdrop-blur border-b border-gray-200 dark:border-border">
         <div className="max-w-screen-lg mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-muted-foreground hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:border-emerald-500/30" onClick={onCancel}><X className="w-6 h-6"/> Sair</Button>
-            <Separator orientation="vertical" className="h-6 bg-border"/>
-            <span className="text-sm text-muted-foreground flex items-center gap-2">
+            <Button variant="ghost" className="text-gray-600 dark:text-muted-foreground hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:border-emerald-500/30" onClick={onCancel}><X className="w-6 h-6"/> Sair</Button>
+            <Separator orientation="vertical" className="h-6 bg-gray-300 dark:bg-border"/>
+            <span className="text-sm text-gray-500 dark:text-muted-foreground flex items-center gap-2">
               {saving ? (<><Clock className="w-6 h-6 animate-spin"/> Salvando…</>) : (savedAt ? <>Salvo • {savedAt.toLocaleTimeString()}</> : '—')}
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button onClick={saveArticleDirect} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"><Save className="w-6 h-6 mr-2"/>Salvar</Button>
             <Button onClick={publish} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-300 hover:shadow-green-500/25 hover:scale-105"><Globe className="w-6 h-6 mr-2"/>Publicar</Button>
           </div>
@@ -551,7 +553,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             setDirty(true);
           }}
           placeholder="Título"
-          className="bg-transparent border-0 text-4xl md:text-5xl font-extrabold tracking-tight placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-0 px-0"
+          className="bg-transparent border-0 text-4xl md:text-5xl font-extrabold tracking-tight placeholder:text-gray-400 dark:placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-0 px-0 text-gray-900 dark:text-white"
         />
         {/* Subtítulo */}
         <Input
@@ -562,23 +564,23 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             setDirty(true);
           }}
           placeholder="Escreva um subtítulo (opcional)"
-          className="bg-transparent border-0 text-lg md:text-xl text-foreground/70 placeholder:text-muted-foreground mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
+          className="bg-transparent border-0 text-lg md:text-xl text-gray-600 dark:text-foreground/70 placeholder:text-gray-400 dark:placeholder:text-muted-foreground mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
         />
 
         {/* Editor com borda e toolbar fixo */}
-        <div className="mt-12 border border-border rounded-lg overflow-hidden bg-card">
+        <div className="mt-12 border border-gray-300 dark:border-border rounded-lg overflow-hidden bg-white dark:bg-card">
           {/* Toolbar fixo no topo */}
-          <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-white dark:bg-card border-b border-gray-300 dark:border-border px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <IconBtn onClick={() => applyInline('bold')} icon={<Bold className="w-6 h-6"/>} title="Negrito" ariaLabel="Negrito"/>
               <IconBtn onClick={() => applyInline('italic')} icon={<Italic className="w-6 h-6"/>} title="Itálico" ariaLabel="Itálico"/>
               <IconBtn onClick={() => wrapBlock('h1')} icon={<Heading1 className="w-6 h-6"/>} title="H1" ariaLabel="Cabeçalho 1"/>
               <IconBtn onClick={() => wrapBlock('h2')} icon={<Heading2 className="w-6 h-6"/>} title="H2" ariaLabel="Cabeçalho 2"/>
-              <div className="w-px h-6 bg-gray-600 mx-1"/>
+              <div className="w-px h-6 bg-gray-400 dark:bg-gray-600 mx-1"/>
               <IconBtn onClick={() => wrapBlock('blockquote')} icon={<Quote className="w-6 h-6"/>} title="Citação" ariaLabel="Citação"/>
               <IconBtn onClick={() => makeList(false)} icon={<List className="w-6 h-6"/>} title="Lista" ariaLabel="Lista não ordenada"/>
               <IconBtn onClick={() => makeList(true)} icon={<ListOrdered className="w-6 h-6"/>} title="Lista numerada" ariaLabel="Lista ordenada"/>
-              <div className="w-px h-6 bg-gray-600 mx-1"/>
+              <div className="w-px h-6 bg-gray-400 dark:bg-gray-600 mx-1"/>
               <IconBtn onClick={() => applyInline('code')} icon={<Code className="w-6 h-6"/>} title="Código Inline" ariaLabel="Código inline"/>
               <IconBtn onClick={() => wrapBlock('pre')} icon={<Type className="w-6 h-6"/>} title="Bloco de Código" ariaLabel="Bloco de código"/>
               <IconBtn onClick={() => setImageDialogOpen(true)} icon={<ImageIcon className="w-6 h-6"/>} title="Imagem" ariaLabel="Inserir imagem"/>
@@ -589,7 +591,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             <Button
               variant="outline"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="border-emerald-500 text-emerald-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-400 gap-2 shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
+              className="border border-gray-300 dark:border-emerald-500 text-gray-700 dark:text-emerald-300 hover:bg-gray-100 dark:hover:bg-emerald-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-emerald-400 gap-2 shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
             >
               <Settings className="w-4 h-4" />
               Configurações
@@ -599,7 +601,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
           {/* Editor */}
           <div
             ref={editorRef}
-            className="prose prose-invert max-w-none outline-none leading-relaxed text-lg min-h-[600px] focus:outline-none px-4 py-20"
+            className="prose prose-gray dark:prose-invert max-w-none outline-none leading-relaxed text-lg min-h-[600px] focus:outline-none px-4 py-20 text-gray-900 dark:text-white"
             contentEditable
             suppressContentEditableWarning
             role="textbox"
@@ -625,7 +627,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             
             {/* Sidebar */}
             <div 
-              className="fixed top-0 right-0 h-full w-80 bg-gray-900 border-l border-gray-600 shadow-2xl z-50 transform transition-transform duration-300 ease-out"
+              className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-900 border-l border-gray-300 dark:border-gray-600 shadow-2xl z-50 transform transition-transform duration-300 ease-out"
               style={{
                 transform: 'translateX(0)',
                 animation: 'slideInFromRight 0.3s ease-out forwards'
@@ -634,46 +636,46 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
               <div className="p-6 h-full overflow-y-auto">
                 {/* Header do sidebar */}
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-white">Configurações do Artigo</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Configurações do Artigo</h3>
                   <Button
                     variant="ghost"
                     onClick={() => setSidebarOpen(false)}
-                    className="text-gray-400 hover:text-emerald-300 hover:bg-emerald-500/20 p-2 transition-all duration-300"
+                    className="text-gray-500 dark:text-gray-400 hover:text-emerald-300 hover:bg-emerald-500/20 p-2 transition-all duration-300"
                   >
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
 
                 {/* Seção Configurações */}
-                <Card className="bg-gray-900 border border-gray-700 mb-6 shadow-lg">
-                  <CardHeader className="pb-4 bg-gray-800">
-                    <CardTitle className="text-base font-semibold text-white">Configurações</CardTitle>
+                <Card className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 mb-6 shadow-lg">
+                  <CardHeader className="pb-4 bg-gray-100 dark:bg-gray-800">
+                    <CardTitle className="text-base font-semibold text-gray-900 dark:text-white">Configurações</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 bg-gray-900">
+                  <CardContent className="space-y-4 bg-gray-50 dark:bg-gray-900">
                     {/* Autor */}
                     <div className="space-y-3">
-                      <Label htmlFor="author" className="text-sm font-medium text-gray-300">Autor</Label>
+                      <Label htmlFor="author" className="text-sm font-medium text-gray-700 dark:text-gray-300">Autor</Label>
                       <Input
                         id="author"
                         value={author}
                         onChange={(e) => { setAuthor(e.target.value); setDirty(true) }}
                         placeholder="Nome do autor..."
-                        className="bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:border-emerald-500"
+                        className="bg-white dark:bg-input-background border border-gray-300 dark:border-border text-gray-900 dark:text-foreground placeholder:text-gray-500 dark:placeholder:text-muted-foreground focus:border-emerald-500"
                       />
                     </div>
 
                         {/* Categoria */}
                         <div className="space-y-3">
-                          <Label htmlFor="category" className="text-sm font-medium text-gray-300">Categoria</Label>
+                          <Label htmlFor="category" className="text-sm font-medium text-gray-700 dark:text-gray-300">Categoria</Label>
                           <select
                             id="category"
                             value={category}
                             onChange={(e) => { setCategory(e.target.value); setDirty(true) }}
-                            className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            className="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                             style={{
-                              backgroundColor: '#1f2937',
-                              color: '#ffffff',
-                              borderColor: '#4b5563'
+                              backgroundColor: 'var(--background)',
+                              color: 'var(--foreground)',
+                              borderColor: 'var(--border)'
                             }}
                           >
                             <option value="" style={{ backgroundColor: '#1f2937', color: '#ffffff' }}>Selecione uma categoria</option>
@@ -697,7 +699,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                         value={tags.join(', ')}
                         onChange={(e) => { setTags(e.target.value.split(',').map(t => t.trim()).filter(Boolean)); setDirty(true) }}
                         placeholder="tag1, tag2, tag3"
-                        className="bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:border-emerald-500"
+                        className="bg-white dark:bg-input-background border border-gray-300 dark:border-border text-gray-900 dark:text-foreground placeholder:text-gray-500 dark:placeholder:text-muted-foreground focus:border-emerald-500"
                       />
                     </div>
 
@@ -710,7 +712,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                           value={imageUrl}
                           onChange={(e) => setImageUrl(e.target.value)}
                           placeholder="https://..."
-                          className="bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:border-emerald-500"
+                          className="bg-white dark:bg-input-background border border-gray-300 dark:border-border text-gray-900 dark:text-foreground placeholder:text-gray-500 dark:placeholder:text-muted-foreground focus:border-emerald-500"
                         />
                         <Button
                           variant="outline"
@@ -729,7 +731,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                   <CardHeader className="pb-4 bg-gray-800">
                     <CardTitle className="text-base font-semibold text-white">Status</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 bg-gray-900">
+                  <CardContent className="space-y-4 bg-gray-50 dark:bg-gray-900">
                     {/* Artigo em Destaque */}
                     <div className="flex items-center justify-between">
                       <Label htmlFor="featured" className="text-sm font-medium text-gray-300">Artigo em Destaque</Label>

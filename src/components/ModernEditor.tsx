@@ -10,6 +10,7 @@ import { Separator } from './ui/separator'
 import { Save, Globe, Clock, X, Settings, ChevronRight } from 'lucide-react'
 import { BlogArticle, blogService } from '../services/blogService'
 import { toast } from 'sonner'
+import { ThemeToggle } from './ThemeToggle'
 
 interface Props {
   article?: BlogArticle | null
@@ -229,6 +230,13 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
     <>
       <style jsx global>{`
         .ql-toolbar {
+          background: #f9fafb !important;
+          border: 1px solid #d1d5db !important;
+          border-bottom: none !important;
+          border-radius: 8px 8px 0 0 !important;
+        }
+        
+        .dark .ql-toolbar {
           background: #1f2937 !important;
           border: 1px solid #374151 !important;
           border-bottom: none !important;
@@ -236,6 +244,14 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-container {
+          background: #ffffff !important;
+          border: 1px solid #d1d5db !important;
+          border-top: none !important;
+          border-radius: 0 0 8px 8px !important;
+          min-height: 600px !important;
+        }
+        
+        .dark .ql-container {
           background: #0f1418 !important;
           border: 1px solid #374151 !important;
           border-top: none !important;
@@ -244,6 +260,13 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-editor {
+          color: #111827 !important;
+          font-size: 16px !important;
+          line-height: 1.6 !important;
+          padding: 20px !important;
+        }
+        
+        .dark .ql-editor {
           color: #ffffff !important;
           font-size: 16px !important;
           line-height: 1.6 !important;
@@ -251,15 +274,28 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-editor.ql-blank::before {
+          color: #9ca3af !important;
+          font-style: normal !important;
+        }
+        
+        .dark .ql-editor.ql-blank::before {
           color: #6b7280 !important;
           font-style: normal !important;
         }
         
         .ql-toolbar .ql-stroke {
+          stroke: #6b7280 !important;
+        }
+        
+        .dark .ql-toolbar .ql-stroke {
           stroke: #9ca3af !important;
         }
         
         .ql-toolbar .ql-fill {
+          fill: #6b7280 !important;
+        }
+        
+        .dark .ql-toolbar .ql-fill {
           fill: #9ca3af !important;
         }
         
@@ -280,6 +316,10 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-toolbar .ql-picker-label {
+          color: #6b7280 !important;
+        }
+        
+        .dark .ql-toolbar .ql-picker-label {
           color: #9ca3af !important;
         }
         
@@ -292,21 +332,43 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-toolbar .ql-picker-options {
+          background: #ffffff !important;
+          border: 1px solid #d1d5db !important;
+          border-radius: 6px !important;
+        }
+        
+        .dark .ql-toolbar .ql-picker-options {
           background: #1f2937 !important;
           border: 1px solid #374151 !important;
           border-radius: 6px !important;
         }
         
         .ql-toolbar .ql-picker-item {
+          color: #111827 !important;
+        }
+        
+        .dark .ql-toolbar .ql-picker-item {
           color: #ffffff !important;
         }
         
         .ql-toolbar .ql-picker-item:hover {
+          background: #f3f4f6 !important;
+          color: #10b981 !important;
+        }
+        
+        .dark .ql-toolbar .ql-picker-item:hover {
           background: #374151 !important;
           color: #10b981 !important;
         }
         
         .ql-editor h1 {
+          color: #111827 !important;
+          font-size: 2rem !important;
+          font-weight: bold !important;
+          margin: 1.5rem 0 0.5rem 0 !important;
+        }
+        
+        .dark .ql-editor h1 {
           color: #ffffff !important;
           font-size: 2rem !important;
           font-weight: bold !important;
@@ -314,6 +376,13 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-editor h2 {
+          color: #111827 !important;
+          font-size: 1.5rem !important;
+          font-weight: bold !important;
+          margin: 1.25rem 0 0.5rem 0 !important;
+        }
+        
+        .dark .ql-editor h2 {
           color: #ffffff !important;
           font-size: 1.5rem !important;
           font-weight: bold !important;
@@ -321,6 +390,13 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-editor h3 {
+          color: #111827 !important;
+          font-size: 1.25rem !important;
+          font-weight: bold !important;
+          margin: 1rem 0 0.5rem 0 !important;
+        }
+        
+        .dark .ql-editor h3 {
           color: #ffffff !important;
           font-size: 1.25rem !important;
           font-weight: bold !important;
@@ -328,22 +404,48 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
         
         .ql-editor blockquote {
+          color: #6b7280 !important;
+          border-left: 4px solid #d1d5db !important;
+          padding-left: 1rem !important;
+          margin: 1rem 0 !important;
+          font-style: italic !important;
+        }
+        
+        .dark .ql-editor blockquote {
+          color: #9ca3af !important;
           border-left: 4px solid #10b981 !important;
           padding-left: 1rem !important;
           margin: 1rem 0 !important;
           font-style: italic !important;
-          color: #9ca3af !important;
         }
         
         .ql-editor code {
+          background-color: #f3f4f6 !important;
+          color: #111827 !important;
+          padding: 0.125rem 0.25rem !important;
+          border-radius: 0.25rem !important;
+          font-family: 'Courier New', monospace !important;
+        }
+        
+        .dark .ql-editor code {
           background-color: #374151 !important;
+          color: #ffffff !important;
           padding: 0.125rem 0.25rem !important;
           border-radius: 0.25rem !important;
           font-family: 'Courier New', monospace !important;
         }
         
         .ql-editor pre {
+          background-color: #f3f4f6 !important;
+          color: #111827 !important;
+          padding: 1rem !important;
+          border-radius: 0.5rem !important;
+          overflow-x: auto !important;
+        }
+        
+        .dark .ql-editor pre {
           background-color: #1f2937 !important;
+          color: #ffffff !important;
           padding: 1rem !important;
           border-radius: 0.5rem !important;
           overflow-x: auto !important;
@@ -351,10 +453,17 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         
         .ql-editor pre code {
           background-color: transparent !important;
+          color: inherit !important;
           padding: 0 !important;
         }
         
         .ql-editor ul, .ql-editor ol {
+          color: #111827 !important;
+          padding-left: 1.5rem !important;
+        }
+        
+        .dark .ql-editor ul, .dark .ql-editor ol {
+          color: #ffffff !important;
           padding-left: 1.5rem !important;
         }
         
@@ -379,30 +488,31 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
         }
       `}</style>
       
-      <div className="min-h-screen bg-[#0b0f12] text-gray-100">
+      <div className="min-h-screen bg-white dark:bg-[#0b0f12] text-gray-900 dark:text-gray-100">
         {/* Header minimalista */}
-        <div className="sticky top-0 z-10 bg-[#0f1418]/80 backdrop-blur border-b border-gray-800">
+        <div className="sticky top-0 z-10 bg-white/80 dark:bg-[#0f1418]/80 backdrop-blur border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-screen-lg mx-auto px-6 h-14 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button variant="ghost" className="text-gray-300 hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300" onClick={onCancel}>
+              <Button variant="ghost" className="text-gray-600 dark:text-gray-300 hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300" onClick={onCancel}>
                 <X className="w-6 h-6"/> Sair
               </Button>
-              <Separator orientation="vertical" className="h-6 bg-gray-800"/>
-              <span className="text-sm text-white/70 flex items-center gap-2">
+              <Separator orientation="vertical" className="h-6 bg-gray-300 dark:bg-gray-800"/>
+              <span className="text-sm text-gray-500 dark:text-white/70 flex items-center gap-2">
                 {saving ? (<><Clock className="w-6 h-6 animate-spin"/> Salvando…</>) : (savedAt ? <>Salvo • {savedAt.toLocaleTimeString()}</> : '—')}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Button onClick={saveArticleDirect} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105">
+              <ThemeToggle />
+              <Button onClick={saveArticleDirect} className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg transition-all duration-300 hover:shadow-blue-500/25 hover:scale-105">
                 <Save className="w-6 h-6 mr-2"/>Salvar
               </Button>
-              <Button onClick={publish} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-300 hover:shadow-green-500/25 hover:scale-105">
+              <Button onClick={publish} className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg transition-all duration-300 hover:shadow-orange-500/25 hover:scale-105">
                 <Globe className="w-6 h-6 mr-2"/>Publicar
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="border-emerald-500 text-emerald-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-400 gap-2 shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
+                className="border border-gray-300 dark:border-emerald-500 text-gray-700 dark:text-emerald-300 hover:bg-gray-100 dark:hover:bg-emerald-600 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-emerald-400 gap-2 shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
               >
                 <Settings className="w-4 h-4" />
                 Configurações
@@ -421,7 +531,7 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
               setDirty(true);
             }}
             placeholder="Título"
-            className="bg-transparent border-0 text-4xl md:text-5xl font-extrabold tracking-tight placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-0 px-0"
+            className="bg-transparent border-0 text-4xl md:text-5xl font-extrabold tracking-tight placeholder:text-gray-400 dark:placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-0 px-0 text-gray-900 dark:text-white"
           />
           
           {/* Subtítulo */}
@@ -432,7 +542,7 @@ export function ModernEditor({ article, onSave, onCancel }: Props) {
               setDirty(true);
             }}
             placeholder="Escreva um subtítulo (opcional)"
-            className="bg-transparent border-0 text-lg md:text-xl text-white/70 placeholder:text-white/30 mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
+            className="bg-transparent border-0 text-lg md:text-xl text-gray-600 dark:text-white/70 placeholder:text-gray-400 dark:placeholder:text-white/30 mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
           />
 
           {/* Editor React Quill */}

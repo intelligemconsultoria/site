@@ -159,7 +159,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                 <Button
                   variant="ghost"
                   onClick={onLogout}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/20 gap-2 transition-all duration-300 hover:scale-105"
+                  className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-500/20 gap-2 transition-all duration-300 hover:scale-105"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Sair
@@ -169,7 +169,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
           </div>
 
           <Button 
-            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
+            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg transition-all duration-300 hover:shadow-blue-500/25 hover:scale-105"
             onClick={handleNewArticle}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -270,7 +270,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                         Comece criando seu primeiro artigo clicando em "Novo Artigo"
                       </p>
                       <Button 
-                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg transition-all duration-300 hover:shadow-blue-500/25 hover:scale-105"
                         onClick={handleNewArticle}
                       >
                         <Plus className="w-4 h-4 mr-2" />
