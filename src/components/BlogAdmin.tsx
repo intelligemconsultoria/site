@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -140,7 +140,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-white hover:text-emerald-400 hover:bg-white/10 gap-2"
+              className="text-white hover:text-emerald-300 hover:bg-emerald-500/20 gap-2 transition-all duration-300 hover:scale-105"
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar
@@ -156,7 +156,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
               <Button
                 variant="ghost"
                 onClick={onLogout}
-                className="text-red-400 hover:text-red-300 hover:bg-red-400/10 gap-2"
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/20 gap-2 transition-all duration-300 hover:scale-105"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Sair
@@ -165,7 +165,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
           </div>
 
           <Button 
-            className="bg-emerald-400 text-black hover:bg-emerald-500"
+            className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
             onClick={handleNewArticle}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -237,7 +237,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                             variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(article)}
-                            className="text-white hover:text-emerald-400 hover:bg-white/10"
+                            className="text-white hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:scale-110"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -245,7 +245,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(article.id)}
-                            className="text-white hover:text-red-400 hover:bg-red-400/10"
+                            className="text-white hover:text-red-300 hover:bg-red-500/20 transition-all duration-300 hover:scale-110"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -266,7 +266,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                         Comece criando seu primeiro artigo clicando em "Novo Artigo"
                       </p>
                       <Button 
-                        className="bg-emerald-400 text-black hover:bg-emerald-500"
+                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
                         onClick={handleNewArticle}
                       >
                         <Plus className="w-4 h-4 mr-2" />

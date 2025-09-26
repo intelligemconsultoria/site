@@ -10,7 +10,7 @@ import { Footer } from "./components/Footer";
 import { BlogPage } from "./components/BlogPage";
 import { BlogAdmin } from "./components/BlogAdmin";
 import { ArticlePage } from "./components/ArticlePage";
-import { ArticleEditor } from "./components/ArticleEditor";
+import { ModernEditor } from "./components/ModernEditor";
 import { AdminLogin } from "./components/AdminLogin";
 import { ResetPassword } from "./components/ResetPassword";
 import { Toaster } from "./components/ui/sonner";
@@ -83,7 +83,6 @@ export default function App() {
   };
   
   const navigateToArticle = (slug: string) => {
-    console.log('🔗 [NAVIGATION] Navegando para artigo:', slug);
     window.history.pushState({}, '', `/article/${slug}`);
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
@@ -100,14 +99,11 @@ export default function App() {
   // Monitor mudanças na página atual
   useEffect(() => {
     console.log('📄 [PAGE CHANGE] currentPage mudou para:', currentPage);
-    console.log('📄 [PAGE CHANGE] Stack trace:', new Error().stack);
   }, [currentPage]);
 
   // Função para atualizar a página baseada na URL
   const updatePageFromURL = () => {
     const { page, slug } = getCurrentPageFromURL();
-    console.log('🔄 [ROUTING] Atualizando página:', { page, slug });
-    console.log('🔄 [ROUTING] URL atual:', window.location.href);
     setCurrentPage(page);
     setCurrentArticleSlug(slug);
   };
@@ -116,14 +112,8 @@ export default function App() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        console.log('🚀 [APP] Inicializando app...');
-        console.log('📍 [APP] URL atual:', window.location.href);
-        console.log('🕐 [APP] Timestamp:', new Date().toISOString());
-        
         // Primeiro verificar autenticação
-        console.log('🔐 [APP] Verificando autenticação...');
         const hasActiveSession = await authService.checkSession();
-        console.log('🔐 [APP] Sessão ativa:', hasActiveSession);
         setIsAdminAuthenticated(hasActiveSession);
         
         // Depois detectar rota baseada na URL
@@ -141,7 +131,6 @@ export default function App() {
   // Escutar mudanças na URL (botão voltar/avançar do navegador)
   useEffect(() => {
     const handlePopState = () => {
-      console.log('🔄 [ROUTING] PopState event - atualizando página');
       updatePageFromURL();
     };
 
@@ -244,7 +233,7 @@ export default function App() {
   if (currentPage === 'admin-editor') {
     return (
       <>
-        <ArticleEditor 
+        <ModernEditor 
           article={null} 
           onSave={async (articleData: Partial<BlogArticle>, isPublish: boolean = false) => {
             try {

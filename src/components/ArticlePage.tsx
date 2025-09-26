@@ -3,11 +3,12 @@ import { Card, CardContent } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { ArrowLeft, Calendar, Clock, User, Share2, BookOpen } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, User, BookOpen } from "lucide-react";
 import { blogService, BlogArticle } from "../services/blogService";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { ShareMenu } from "./ShareMenu";
 
 interface ArticlePageProps {
   slug: string;
@@ -43,23 +44,6 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
     }
   };
 
-  const handleShare = async () => {
-    if (navigator.share && article) {
-      try {
-        await navigator.share({
-          title: article.title,
-          text: article.excerpt,
-          url: window.location.href,
-        });
-      } catch (err) {
-        navigator.clipboard.writeText(window.location.href);
-        toast.success('Link copiado para a área de transferência!');
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copiado para a área de transferência!');
-    }
-  };
 
   if (loading) {
     return (
@@ -102,14 +86,12 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
             </Button>
             
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                onClick={handleShare}
-                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 gap-2"
-              >
-                <Share2 className="w-4 h-4" />
-                Compartilhar
-              </Button>
+              {article && (
+                <ShareMenu 
+                  article={article} 
+                  articleUrl={window.location.href}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -296,14 +278,12 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
             >
               Voltar ao Blog
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleShare}
-              className="border-gray-300 text-gray-600 hover:bg-gray-50 px-8 py-3"
-            >
-              <Share2 className="w-4 h-4 mr-2" />
-              Compartilhar
-            </Button>
+            {article && (
+              <ShareMenu 
+                article={article} 
+                articleUrl={window.location.href}
+              />
+            )}
           </div>
         </article>
       </main>

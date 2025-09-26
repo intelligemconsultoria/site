@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { BlogArticle, blogService } from '../services/blogService'
 import { toast } from 'sonner'
+import DOMPurify from 'dompurify'
 
 /**
  * Medium‑like editor (WYSIWYG) mantendo o design dark/emerald da IntelliGem.
@@ -59,69 +60,169 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
 
   // ===== Helpers de formatação =====
   const applyInline = (cmd: 'bold' | 'italic' | 'code') => {
-    document.execCommand(cmd === 'code' ? 'insertHTML' : cmd, false, cmd === 'code' ? '<code>' + getSelectionText() + '</code>' : undefined)
-    focusEditor()
+    console.log('🔧 Aplicando formatação:', cmd);
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      console.log('❌ Nenhuma seleção encontrada');
+      return;
+    }
+    
+    const range = selection.getRangeAt(0);
+    const selectedText = selection.toString();
+    
+    if (!selectedText) {
+      console.log('❌ Nenhum texto selecionado');
+      return;
+    }
+    
+    let wrapperElement;
+    switch (cmd) {
+      case 'bold':
+        wrapperElement = document.createElement('strong');
+        break;
+      case 'italic':
+        wrapperElement = document.createElement('em');
+        break;
+      case 'code':
+        wrapperElement = document.createElement('code');
+        break;
+    }
+    
+    wrapperElement.textContent = selectedText;
+    range.deleteContents();
+    range.insertNode(wrapperElement);
+    
+    // Limpar seleção e focar no editor
+    selection.removeAllRanges();
+    focusEditor();
+    setDirty(true);
+    console.log('✅ Formatação aplicada:', cmd);
   }
 
   const wrapBlock = (tag: 'h1' | 'h2' | 'blockquote' | 'pre') => {
-    const sel = window.getSelection()
-    if (!sel || sel.rangeCount === 0) return
-    const range = sel.getRangeAt(0)
-    let block = range.startContainer as HTMLElement
-    while (block && block.nodeType === 3) block = (block.parentNode as HTMLElement)
-    while (block && block !== editorRef.current && block.parentElement !== editorRef.current) block = block.parentElement as HTMLElement
-    if (!block || block === editorRef.current) {
-      // cria bloco se seleção estiver solta
-      const el = document.createElement(tag)
-      el.appendChild(document.createTextNode(getSelectionText() || ''))
-      range.deleteContents()
-      range.insertNode(el)
-    } else {
-      const el = document.createElement(tag)
-      el.innerHTML = block.innerHTML
-      editorRef.current!.replaceChild(el, block)
+    console.log('🔧 Aplicando bloco:', tag);
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      console.log('❌ Nenhuma seleção encontrada');
+      return;
     }
-    focusEditor()
+    
+    const range = selection.getRangeAt(0);
+    const selectedText = selection.toString();
+    
+    if (!selectedText) {
+      console.log('❌ Nenhum texto selecionado');
+      return;
+    }
+    
+    const blockElement = document.createElement(tag);
+    blockElement.textContent = selectedText;
+    
+    range.deleteContents();
+    range.insertNode(blockElement);
+    
+    // Reposicionar caret após o bloco
+    placeCaretAfter(blockElement);
+    setDirty(true);
+    console.log('✅ Bloco aplicado:', tag);
   }
 
   const makeList = (ordered = false) => {
-    const sel = window.getSelection()
-    if (!sel || sel.rangeCount === 0) return
-    const range = sel.getRangeAt(0)
-    const text = getSelectionText() || (range.commonAncestorContainer.textContent || '').trim()
-    const lines = text.split(/\n+/).filter(Boolean)
-    const list = document.createElement(ordered ? 'ol' : 'ul')
-    for (const l of lines.length ? lines : ['Item']) {
-      const li = document.createElement('li'); li.textContent = l
-      list.appendChild(li)
+    console.log('🔧 Criando lista:', ordered ? 'ordenada' : 'não ordenada');
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      console.log('❌ Nenhuma seleção encontrada');
+      return;
     }
-    range.deleteContents(); range.insertNode(list)
-    focusEditor()
+    
+    const range = selection.getRangeAt(0);
+    const selectedText = selection.toString();
+    
+    if (!selectedText) {
+      console.log('❌ Nenhum texto selecionado');
+      return;
+    }
+    
+    const listElement = document.createElement(ordered ? 'ol' : 'ul');
+    const lines = selectedText.split(/\n+/).filter(Boolean);
+    
+    for (const line of lines) {
+      const listItem = document.createElement('li');
+      listItem.textContent = line;
+      listElement.appendChild(listItem);
+    }
+    
+    range.deleteContents();
+    range.insertNode(listElement);
+    
+    // Reposicionar caret após a lista
+    placeCaretAfter(listElement);
+    setDirty(true);
+    console.log('✅ Lista criada:', ordered ? 'ordenada' : 'não ordenada');
   }
 
   const insertDivider = () => {
-    const hr = document.createElement('hr')
-    insertNode(hr)
+    console.log('🔧 Inserindo divisor');
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      console.log('❌ Nenhuma seleção encontrada');
+      return;
+    }
+    
+    const range = selection.getRangeAt(0);
+    const hr = document.createElement('hr');
+    hr.className = 'my-4 border-gray-600';
+    
+    range.insertNode(hr);
+    
+    // Reposicionar caret após o divisor
+    placeCaretAfter(hr);
+    setDirty(true);
+    console.log('✅ Divisor inserido');
   }
 
   const insertImage = (src: string) => {
-    const fig = document.createElement('figure')
-    fig.className = 'my-6'
-    const img = document.createElement('img')
-    img.src = src
-    img.alt = title || 'Imagem'
-    img.className = 'w-full h-auto rounded-lg'
-    const cap = document.createElement('figcaption')
-    cap.textContent = 'Legenda (opcional)'
-    cap.className = 'text-center text-white/50 text-sm mt-2 outline-none'
-    cap.contentEditable = 'true'
-    fig.appendChild(img); fig.appendChild(cap)
-    insertNode(fig)
+    console.log('🔧 Inserindo imagem:', src);
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      console.log('❌ Nenhuma seleção encontrada');
+      return;
+    }
+    
+    const range = selection.getRangeAt(0);
+    const fig = document.createElement('figure');
+    fig.className = 'my-6';
+    
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = title || 'Imagem';
+    img.className = 'w-full h-auto rounded-lg';
+    
+    const cap = document.createElement('figcaption');
+    cap.textContent = 'Legenda (opcional)';
+    cap.className = 'text-center text-white/50 text-sm mt-2 outline-none';
+    cap.contentEditable = 'true';
+    
+    fig.appendChild(img);
+    fig.appendChild(cap);
+    
+    range.insertNode(fig);
+    
+    // Reposicionar caret após a imagem
+    placeCaretAfter(fig);
+    setDirty(true);
+    console.log('✅ Imagem inserida');
   }
 
   const insertNode = (node: Node) => {
     const sel = window.getSelection(); if (!sel || sel.rangeCount === 0) { editorRef.current?.appendChild(node); return }
     const range = sel.getRangeAt(0); range.collapse(false); range.insertNode(node)
+  }
+
+  // Fallback nativo para listas (quando não há seleção)
+  const toggleNativeList = (ordered = false) => {
+    document.execCommand(ordered ? 'insertOrderedList' : 'insertUnorderedList');
+    setDirty(true);
   }
 
   const getSelectionText = () => (window.getSelection()?.toString() || '')
@@ -148,14 +249,20 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === '/' && !slashOpen) setSlashOpen(true)
     if (slashOpen && e.key === 'Escape') setSlashOpen(false)
+    
+    // Atalhos de markdown com espaço (comportamento Notion/Medium)
+    if (e.key === ' ') {
+      const line = getCurrentLineText()
+      if (/^-\s?$/.test(line)) { e.preventDefault(); replaceCurrentLine(''); toggleNativeList(false); return; }
+      if (/^1\.\s?$/.test(line)) { e.preventDefault(); replaceCurrentLine(''); toggleNativeList(true); return; }
+    }
+    
     // markdown shortcuts ao Enter
     if (e.key === 'Enter') {
       const line = getCurrentLineText()
       if (/^#\s/.test(line)) { e.preventDefault(); replaceCurrentLine(line.replace(/^#\s/, '')); wrapBlock('h1'); return }
       if (/^##\s/.test(line)) { e.preventDefault(); replaceCurrentLine(line.replace(/^##\s/, '')); wrapBlock('h2'); return }
       if (/^>\s/.test(line)) { e.preventDefault(); replaceCurrentLine(line.replace(/^>\s/, '')); wrapBlock('blockquote'); return }
-      if (/^-\s/.test(line)) { e.preventDefault(); replaceCurrentLine(line.replace(/^-\s/, '')); makeList(false); return }
-      if (/^1\.\s/.test(line)) { e.preventDefault(); replaceCurrentLine(line.replace(/^1\.\s/, '')); makeList(true); return }
       if (/^```$/.test(line.trim())) { e.preventDefault(); replaceCurrentLine(''); wrapBlock('pre'); return }
     }
   }
@@ -206,7 +313,9 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
     try {
       const html = editorRef.current?.innerHTML || ''
       console.log('📄 HTML do editor:', html.substring(0, 100) + '...');
-      const contentMd = htmlToMarkdown(html)
+      const sanitizedHtml = sanitizeHtml(html)
+      console.log('🧹 HTML sanitizado:', sanitizedHtml.substring(0, 100) + '...');
+      const contentMd = htmlToMarkdown(sanitizedHtml)
       console.log('📝 Markdown convertido:', contentMd.substring(0, 100) + '...');
       
       const articleData = {
@@ -319,7 +428,8 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
     }
 
     try {
-      const contentMd = htmlToMarkdown(html)
+      const sanitizedHtml = sanitizeHtml(html)
+      const contentMd = htmlToMarkdown(sanitizedHtml)
       
       const articleData = {
         id: articleId || article?.id, // Incluir ID se existir
@@ -403,6 +513,13 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
           background-color: #1f2937 !important;
           color: #ffffff !important;
         }
+        
+        /* Placeholder visível no editor */
+        [contenteditable][data-placeholder]:empty:before {
+          content: attr(data-placeholder);
+          color: #9CA3AF;
+          pointer-events: none;
+        }
       `}</style>
       
       <div className="min-h-screen bg-[#0b0f12] text-gray-100">
@@ -410,21 +527,21 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
       <div className="sticky top-0 z-10 bg-[#0f1418]/80 backdrop-blur border-b border-gray-800">
         <div className="max-w-screen-lg mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-gray-300 hover:text-white" onClick={onCancel}><X className="w-6 h-6"/> Sair</Button>
+            <Button variant="ghost" className="text-gray-300 hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:border-emerald-500/30" onClick={onCancel}><X className="w-6 h-6"/> Sair</Button>
             <Separator orientation="vertical" className="h-6 bg-gray-800"/>
             <span className="text-sm text-white/70 flex items-center gap-2">
               {saving ? (<><Clock className="w-6 h-6 animate-spin"/> Salvando…</>) : (savedAt ? <>Salvo • {savedAt.toLocaleTimeString()}</> : '—')}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={saveArticleDirect} className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg transition-all duration-200"><Save className="w-6 h-6 mr-2"/>Salvar</Button>
-            <Button onClick={publish} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200"><Globe className="w-6 h-6 mr-2"/>Publicar</Button>
+            <Button onClick={saveArticleDirect} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"><Save className="w-6 h-6 mr-2"/>Salvar</Button>
+            <Button onClick={publish} className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg transition-all duration-300 hover:shadow-green-500/25 hover:scale-105"><Globe className="w-6 h-6 mr-2"/>Publicar</Button>
           </div>
         </div>
       </div>
 
       {/* Área principal estilo Medium */}
-      <main className="max-w-screen-md mx-auto px-6 py-8">
+      <main className="mx-auto px-6 py-8" style={{ maxWidth: '68ch' }}>
         {/* Título */}
         <Input
           value={title}
@@ -453,25 +570,26 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
           {/* Toolbar fixo no topo */}
           <div className="sticky top-0 z-10 bg-[#0f1418] border-b border-gray-700 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <IconBtn onClick={() => applyInline('bold')} icon={<Bold className="w-6 h-6"/>} title="Negrito"/>
-              <IconBtn onClick={() => applyInline('italic')} icon={<Italic className="w-6 h-6"/>} title="Itálico"/>
-              <IconBtn onClick={() => wrapBlock('h1')} icon={<Heading1 className="w-6 h-6"/>} title="H1"/>
-              <IconBtn onClick={() => wrapBlock('h2')} icon={<Heading2 className="w-6 h-6"/>} title="H2"/>
+              <IconBtn onClick={() => applyInline('bold')} icon={<Bold className="w-6 h-6"/>} title="Negrito" ariaLabel="Negrito"/>
+              <IconBtn onClick={() => applyInline('italic')} icon={<Italic className="w-6 h-6"/>} title="Itálico" ariaLabel="Itálico"/>
+              <IconBtn onClick={() => wrapBlock('h1')} icon={<Heading1 className="w-6 h-6"/>} title="H1" ariaLabel="Cabeçalho 1"/>
+              <IconBtn onClick={() => wrapBlock('h2')} icon={<Heading2 className="w-6 h-6"/>} title="H2" ariaLabel="Cabeçalho 2"/>
               <div className="w-px h-6 bg-gray-600 mx-1"/>
-              <IconBtn onClick={() => wrapBlock('blockquote')} icon={<Quote className="w-6 h-6"/>} title="Citação"/>
-              <IconBtn onClick={() => makeList(false)} icon={<List className="w-6 h-6"/>} title="Lista"/>
-              <IconBtn onClick={() => makeList(true)} icon={<ListOrdered className="w-6 h-6"/>} title="Lista numerada"/>
+              <IconBtn onClick={() => wrapBlock('blockquote')} icon={<Quote className="w-6 h-6"/>} title="Citação" ariaLabel="Citação"/>
+              <IconBtn onClick={() => makeList(false)} icon={<List className="w-6 h-6"/>} title="Lista" ariaLabel="Lista não ordenada"/>
+              <IconBtn onClick={() => makeList(true)} icon={<ListOrdered className="w-6 h-6"/>} title="Lista numerada" ariaLabel="Lista ordenada"/>
               <div className="w-px h-6 bg-gray-600 mx-1"/>
-              <IconBtn onClick={() => wrapBlock('pre')} icon={<Code className="w-6 h-6"/>} title="Código"/>
-              <IconBtn onClick={() => setImageDialogOpen(true)} icon={<ImageIcon className="w-6 h-6"/>} title="Imagem"/>
-              <IconBtn onClick={() => insertDivider()} icon={<Minus className="w-6 h-6"/>} title="Divisor"/>
+              <IconBtn onClick={() => applyInline('code')} icon={<Code className="w-6 h-6"/>} title="Código Inline" ariaLabel="Código inline"/>
+              <IconBtn onClick={() => wrapBlock('pre')} icon={<Type className="w-6 h-6"/>} title="Bloco de Código" ariaLabel="Bloco de código"/>
+              <IconBtn onClick={() => setImageDialogOpen(true)} icon={<ImageIcon className="w-6 h-6"/>} title="Imagem" ariaLabel="Inserir imagem"/>
+              <IconBtn onClick={() => insertDivider()} icon={<Minus className="w-6 h-6"/>} title="Divisor" ariaLabel="Inserir divisor"/>
             </div>
             
             {/* Botão de Configurações */}
             <Button
               variant="outline"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white hover:border-purple-400 gap-2 shadow-lg transition-all duration-200"
+              className="border-emerald-500 text-emerald-300 hover:bg-emerald-600 hover:text-white hover:border-emerald-400 gap-2 shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105"
             >
               <Settings className="w-4 h-4" />
               Configurações
@@ -484,6 +602,9 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             className="prose prose-invert max-w-none outline-none leading-relaxed text-lg min-h-[600px] focus:outline-none px-4 py-20"
             contentEditable
             suppressContentEditableWarning
+            role="textbox"
+            aria-multiline="true"
+            spellCheck={true}
             onInput={onInput}
             onPaste={onPaste}
             onKeyDown={onKeyDown}
@@ -517,7 +638,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                   <Button
                     variant="ghost"
                     onClick={() => setSidebarOpen(false)}
-                    className="text-gray-400 hover:text-white hover:bg-gray-700 p-2"
+                    className="text-gray-400 hover:text-emerald-300 hover:bg-emerald-500/20 p-2 transition-all duration-300"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -689,8 +810,8 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             <Label htmlFor="img-url">URL</Label>
             <Input id="img-url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://…" className="bg-[#0f1418] border-gray-700"/>
             <div className="flex gap-2 justify-end mt-4">
-              <Button variant="outline" className="border-gray-700 hover:bg-gray-700" onClick={() => setImageDialogOpen(false)}>Cancelar</Button>
-              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200" onClick={() => { if (imageUrl.trim()) insertImage(imageUrl.trim()); setImageDialogOpen(false); setImageUrl('') }}>Inserir</Button>
+              <Button variant="outline" className="border-gray-700 hover:bg-emerald-500/20 hover:text-emerald-300 hover:border-emerald-500 transition-all duration-300" onClick={() => setImageDialogOpen(false)}>Cancelar</Button>
+              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105" onClick={() => { if (imageUrl.trim()) insertImage(imageUrl.trim()); setImageDialogOpen(false); setImageUrl('') }}>Inserir</Button>
             </div>
           </div>
         </DialogContent>
@@ -701,9 +822,9 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
 }
 
 // ====== Componentes auxiliares ======
-function IconBtn({ icon, onClick, title }: { icon: React.ReactNode; onClick: () => void; title?: string }) {
+function IconBtn({ icon, onClick, title, ariaLabel }: { icon: React.ReactNode; onClick: () => void; title?: string; ariaLabel?: string }) {
   return (
-    <button type="button" onClick={onClick} title={title} className="p-1.5 rounded-md hover:bg-white/5 text-white/90">
+    <button type="button" onClick={onClick} title={title} aria-label={ariaLabel || title} className="p-1.5 rounded-md hover:bg-emerald-500/20 text-white/90 hover:text-emerald-300 transition-all duration-300 hover:scale-110">
       {icon}
     </button>
   )
@@ -711,7 +832,7 @@ function IconBtn({ icon, onClick, title }: { icon: React.ReactNode; onClick: () 
 
 function SlashItem({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/5 text-left">
+    <button onClick={onClick} className="w-full flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-emerald-500/20 text-left transition-all duration-300 hover:text-emerald-300">
       <span className="opacity-80">{icon}</span>
       <span>{label}</span>
     </button>
@@ -750,7 +871,15 @@ function htmlToMarkdown(html: string): string {
   s = s.replace(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/gi, (_, t) => '```\n' + decode(t) + '\n```\n\n')
   s = s.replace(/<code[^>]*>([\s\S]*?)<\/code>/gi, (_, t) => '`' + decode(t) + '`')
   s = s.replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_, t) => t.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, li) => `- ${clean(li)}\n`) + '\n')
-  s = s.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, t) => t.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, li, i) => `${i + 1}. ${clean(li)}\n`) + '\n')
+  s = s.replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_, t) => {
+    const lis: string[] = [];
+    let match;
+    const regex = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+    while ((match = regex.exec(t)) !== null) {
+      lis.push(clean(match[1]));
+    }
+    return lis.map((li, idx) => `${idx + 1}. ${li}\n`).join('') + '\n';
+  })
   s = s.replace(/<hr\s*\/?>/gi, '\n---\n')
   s = s.replace(/<figure[^>]*>[\s\S]*?<img[^>]*src=["']([^"']+)["'][\s\S]*?<\/figure>/gi, (_, src) => `![imagem](${src})\n\n`)
   s = s.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, t) => clean(t) + '\n\n')
@@ -761,17 +890,48 @@ function htmlToMarkdown(html: string): string {
 function markdownToHtml(md: string): string {
   // renderização bem simples apenas para popular o editor quando vier markdown do backend
   let h = md
+
+  // listas não ordenadas em bloco
+  h = h.replace(/^(?:-\s.+\n?)+/gm, block => {
+    const items = block.trim().split(/\n/).map(l => l.replace(/^-+\s*/, '').trim());
+    return '<ul>' + items.map(i => `<li>${i}</li>`).join('') + '</ul>';
+  });
+
+  // listas ordenadas em bloco
+  h = h.replace(/^(?:\d+\.\s.+\n?)+/gm, block => {
+    const items = block.trim().split(/\n/).map(l => l.replace(/^\d+\.\s*/, '').trim());
+    return '<ol>' + items.map(i => `<li>${i}</li>`).join('') + '</ol>';
+  });
+
   h = h.replace(/^###\s(.+)$/gm, '<h3>$1</h3>')
   h = h.replace(/^##\s(.+)$/gm, '<h2>$1</h2>')
   h = h.replace(/^#\s(.+)$/gm, '<h1>$1</h1>')
   h = h.replace(/^>\s(.+)$/gm, '<blockquote>$1</blockquote>')
-  h = h.replace(/^\-\s(.+)$/gm, '<ul><li>$1</li></ul>')
   h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
   h = h.replace(/\*(.+?)\*/g, '<em>$1</em>')
   h = h.replace(/`([^`]+)`/g, '<code>$1</code>')
-  h = h.replace(/\n\n/g, '<p></p>')
+  h = h.replace(/\n{2,}/g, '<p></p>')
   return h
 }
 
 function clean(s: string) { return s.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim() }
 function decode(s: string) { const e = document.createElement('textarea'); e.innerHTML = s; return e.value }
+
+function placeCaretAfter(node: Node) {
+  const range = document.createRange();
+  range.setStartAfter(node);
+  range.collapse(true);
+  const sel = window.getSelection();
+  if (!sel) return;
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// Sanitização básica para HTML do editor
+function sanitizeHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'pre', 'h1', 'h2', 'h3', 'ul', 'ol', 'li', 'blockquote', 'hr', 'figure', 'img', 'figcaption', 'a'],
+    ALLOWED_ATTR: ['src', 'alt', 'href', 'title', 'class', 'contenteditable'],
+    ALLOW_DATA_ATTR: false
+  });
+}

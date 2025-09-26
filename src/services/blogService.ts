@@ -190,10 +190,14 @@ class BlogService {
             .single();
           
           if (articleError) {
+            console.error('❌ Erro ao buscar artigo:', articleError);
             if (articleError.code === 'PGRST116') {
               throw new Error('Artigo não encontrado');
             }
-            throw articleError;
+            if (articleError.code === 'PGRST301' || articleError.message?.includes('406')) {
+              throw new Error('Artigo não encontrado');
+            }
+            throw new Error(`Erro ao buscar artigo: ${articleError.message}`);
           }
           return articleData;
       }
@@ -257,7 +261,7 @@ class BlogService {
       const readTime = article.read_time || this.calculateReadTime(article.content);
       
       const articleData = {
-        ...article,
+      ...article,
         slug,
         read_time: readTime,
         date: article.date || new Date().toISOString().split('T')[0]
@@ -374,7 +378,7 @@ class BlogService {
       await this.makeRequest(`articles/${id}`, {
         method: 'DELETE'
       });
-      return true;
+    return true;
     } catch (error) {
       if (error.message.includes('404')) {
         return false;
