@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
@@ -6,7 +6,8 @@ import { Input } from "./ui/input";
 import { Badge } from "./ui/badge";
 import { ArrowLeft, Search, Calendar, Clock, User, Filter, Loader2 } from "lucide-react";
 import { useBlog } from "../hooks/useBlog";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface BlogPageProps {
   onBack: () => void;
@@ -62,19 +63,20 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
   const regularArticles = articles.filter(article => !article.featured);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-white dark:bg-black">
       {/* Header da página do blog */}
-      <div className="bg-gradient-to-b from-gray-900/50 to-transparent py-8 border-b border-white/10">
+      <div className="bg-white dark:bg-gradient-to-b dark:from-gray-900/50 dark:to-transparent py-8 border-b border-gray-200 dark:border-white/10">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-8">
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-white hover:text-emerald-400 hover:bg-white/10 gap-2"
+              className="text-gray-900 dark:text-white hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-white/10 gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar ao Site
             </Button>
+            <ThemeToggle />
           </div>
 
           <div className="text-center mb-12">
@@ -83,7 +85,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
                 Blog IntelliGem
               </span>
             </h1>
-            <p className="text-xl text-white/70 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-white/70 max-w-3xl mx-auto">
               Insights estratégicos, tendências de mercado e conhecimento especializado em dados, IA e automação.
             </p>
           </div>
@@ -91,12 +93,12 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
           {/* Barra de pesquisa e filtros */}
           <div className="max-w-4xl mx-auto space-y-6">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white/50 w-5 h-5" />
               <Input
                 placeholder="Pesquisar artigos..."
                 value={searchTerm}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="pl-12 bg-white/5 border-white/20 text-white placeholder:text-white/50 focus:border-emerald-400"
+                className="pl-12 bg-white dark:bg-white/5 border border-black dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/50 focus:border-emerald-400 dark:focus:border-emerald-400"
               />
             </div>
 
@@ -108,7 +110,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
                   className={`cursor-pointer transition-all duration-200 ${
                     selectedCategory === category
                       ? "bg-emerald-400 text-black hover:bg-emerald-500"
-                      : "border-white/20 text-white/70 hover:border-emerald-400 hover:text-emerald-400"
+                      : "border-gray-300 dark:border-white/20 text-gray-700 dark:text-white/70 hover:border-emerald-400 hover:text-emerald-400"
                   }`}
                   onClick={() => handleCategoryFilter(category)}
                 >
@@ -125,7 +127,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
         {/* Artigo em destaque */}
         {featuredArticle && selectedCategory === "Todos" && !searchTerm && (
           <div className="mb-16">
-            <h2 className="text-2xl mb-8 text-white/90">Artigo em Destaque</h2>
+            <h2 className="text-2xl mb-8 text-gray-900 dark:text-white/90">Artigo em Destaque</h2>
             <Card className="bg-gradient-to-r from-emerald-900/30 to-blue-900/30 border-emerald-400/30 overflow-hidden">
               <div className="lg:flex">
                 <div className="lg:w-1/2">
@@ -174,11 +176,11 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
         {/* Lista de artigos */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl text-white/90">
+            <h2 className="text-2xl text-gray-900 dark:text-white/90">
               {searchTerm ? `Resultados para "${searchTerm}"` : 
                selectedCategory !== "Todos" ? `Categoria: ${selectedCategory}` : "Todos os Artigos"}
             </h2>
-            <span className="text-white/60">
+            <span className="text-gray-600 dark:text-white/60">
               {articles.length} artigo{articles.length !== 1 ? 's' : ''}
             </span>
           </div>
@@ -188,7 +190,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
         {loading && (
           <div className="flex justify-center items-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
-            <span className="ml-2 text-white/70">Carregando artigos...</span>
+            <span className="ml-2 text-gray-600 dark:text-white/70">Carregando artigos...</span>
           </div>
         )}
 
@@ -207,7 +209,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
             {regularArticles.map((article, index) => (
               <Card
                 key={index}
-                className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group overflow-hidden cursor-pointer"
+                className="border border-black dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300 group overflow-hidden cursor-pointer"
                 onClick={() => onNavigateToArticle?.(article.slug)}
               >
                 <div className="relative overflow-hidden">
@@ -225,7 +227,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
                 </div>
 
                 <CardContent className="p-6 space-y-4">
-                  <div className="flex items-center gap-4 text-xs text-white/60">
+                  <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-white/60">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {article.date}
@@ -236,23 +238,23 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
                     </div>
                   </div>
 
-                  <h3 className="text-white text-xl leading-tight group-hover:text-emerald-400 transition-colors">
+                  <h3 className="text-gray-900 dark:text-white text-xl leading-tight group-hover:text-emerald-400 transition-colors">
                     {article.title}
                   </h3>
 
-                  <p className="text-white/60 text-sm leading-relaxed line-clamp-3">
+                  <p className="text-gray-600 dark:text-white/60 text-sm leading-relaxed line-clamp-3">
                     {article.excerpt}
                   </p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                    <div className="flex items-center gap-2 text-white/70 text-sm">
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-white/70 text-sm">
                       <User className="w-3 h-3" />
                       {article.author}
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-emerald-400 hover:text-white hover:bg-emerald-400/20 p-0 h-auto"
+                      className="text-emerald-400 hover:text-gray-900 dark:hover:text-white hover:bg-emerald-400/20 p-0 h-auto"
                       onClick={() => onNavigateToArticle?.(article.slug)}
                     >
                       Ler mais →
@@ -264,7 +266,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
           </div>
         ) : !loading && !error && (
           <div className="text-center py-16">
-            <div className="text-white/50 mb-4">
+            <div className="text-gray-400 dark:text-white/50 mb-4">
               <Filter className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-xl mb-2">Nenhum artigo encontrado</h3>
               <p>Tente alterar os filtros ou termo de pesquisa.</p>
@@ -284,7 +286,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
               placeholder="Seu melhor e-mail"
               value={newsletterEmail}
               onChange={(e) => setNewsletterEmail(e.target.value)}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+              className="bg-white dark:bg-white/10 border border-black dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/50"
               disabled={subscribing}
             />
             <Button 

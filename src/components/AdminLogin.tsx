@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -6,6 +6,7 @@ import { Label } from "./ui/label";
 import { Lock, Eye, EyeOff, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { authService } from "../services/authService";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface AdminLoginProps {
   onLogin: () => void;
@@ -50,28 +51,33 @@ export function AdminLogin({ onLogin, onCancel }: AdminLoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900 flex items-center justify-center p-6">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent_50%)]"></div>
       
       <div className="relative z-10 w-full max-w-md">
+        {/* Theme Toggle */}
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+        
         {/* Logo Section */}
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-400/25">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Acesso Administrativo</h1>
-          <p className="text-white/60 text-sm leading-relaxed">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Acesso Administrativo</h1>
+          <p className="text-gray-600 dark:text-white/60 text-sm leading-relaxed">
             Digite a senha para acessar o painel de administração do blog IntelliGem
           </p>
         </div>
 
         {/* Login Form */}
-        <Card className="bg-white/5 backdrop-blur-sm border-white/10 shadow-2xl">
+        <Card className="bg-white dark:bg-white/5 backdrop-blur-sm border border-gray-200 dark:border-white/10 shadow-2xl">
           <CardContent className="p-8">
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white font-medium">
+                <Label htmlFor="email" className="text-gray-900 dark:text-white font-medium">
                   Email de Administração
                 </Label>
                 <div className="relative">
@@ -80,17 +86,17 @@ export function AdminLogin({ onLogin, onCancel }: AdminLoginProps) {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pl-12 h-12 text-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all"
+                    className="bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/50 pl-12 h-12 text-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all"
                     placeholder="admin@intelligem.com.br"
                     required
                     autoFocus
                   />
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-white/50" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-white font-medium">
+                <Label htmlFor="password" className="text-gray-900 dark:text-white font-medium">
                   Senha
                 </Label>
                 <div className="relative">
@@ -99,7 +105,7 @@ export function AdminLogin({ onLogin, onCancel }: AdminLoginProps) {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-white/50 pr-12 h-12 text-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all"
+                    className="bg-white dark:bg-white/10 border border-gray-300 dark:border-white/20 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-white/50 pr-12 h-12 text-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all"
                     placeholder="Digite sua senha..."
                     required
                   />
@@ -107,7 +113,7 @@ export function AdminLogin({ onLogin, onCancel }: AdminLoginProps) {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white hover:bg-white/10 rounded-lg"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/50 hover:text-gray-600 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -120,7 +126,7 @@ export function AdminLogin({ onLogin, onCancel }: AdminLoginProps) {
                   type="button"
                   variant="outline"
                   onClick={onCancel}
-                  className="flex-1 h-12 border-white/20 text-white hover:bg-white/10 hover:border-white/30 transition-all"
+                  className="flex-1 h-12 border border-gray-300 dark:border-white/20 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/30 transition-all"
                 >
                   Cancelar
                 </Button>

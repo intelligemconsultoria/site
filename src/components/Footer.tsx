@@ -3,7 +3,7 @@ import intelligemLogo from "figma:asset/6b92ef4371fead8d661263f615c56e4cb4e3ce7f
 
 export function Footer() {
   return (
-    <footer className="bg-gradient-to-t from-black to-gray-900/50 border-t border-white/10">
+    <footer className="bg-gradient-to-t from-black to-gray-900/50 dark:from-black dark:to-gray-900/50 light:from-white light:to-gray-100 border-t border-white/10 dark:border-white/10 light:border-gray-200">
       <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Logo and Description */}
@@ -14,9 +14,9 @@ export function Footer() {
                 alt="IntelliGem" 
                 className="w-12 h-12"
               />
-              <span className="text-white font-semibold text-xl">IntelliGem</span>
+              <span className="text-white dark:text-white light:text-gray-900 font-semibold text-xl">IntelliGem</span>
             </div>
-            <p className="text-white/60 text-sm leading-relaxed">
+            <p className="text-white/60 dark:text-white/60 light:text-gray-600 text-sm leading-relaxed">
               Transformamos dados em decisões estratégicas através de soluções inteligentes de BI, IA e Automação.
             </p>
             <div className="flex space-x-4">
@@ -40,13 +40,13 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h3 className="text-white">Links Rápidos</h3>
+            <h3 className="text-white dark:text-white light:text-gray-900">Links Rápidos</h3>
             <ul className="space-y-3">
-              <li><a href="#sobre" className="text-white/60 hover:text-white transition-colors text-sm">Sobre Nós</a></li>
-              <li><a href="#solucoes" className="text-white/60 hover:text-white transition-colors text-sm">Soluções</a></li>
-              <li><a href="#cases" className="text-white/60 hover:text-white transition-colors text-sm">Cases de Sucesso</a></li>
-              <li><a href="#blog" className="text-white/60 hover:text-white transition-colors text-sm">Blog</a></li>
-              <li><a href="#" className="text-white/60 hover:text-white transition-colors text-sm">Carreiras</a></li>
+              <li><a href="#sobre" className="text-white/60 dark:text-white/60 light:text-gray-600 hover:text-white dark:hover:text-white light:hover:text-gray-900 transition-colors text-sm">Sobre Nós</a></li>
+              <li><a href="#solucoes" className="text-white/60 dark:text-white/60 light:text-gray-600 hover:text-white dark:hover:text-white light:hover:text-gray-900 transition-colors text-sm">Soluções</a></li>
+              <li><a href="#cases" className="text-white/60 dark:text-white/60 light:text-gray-600 hover:text-white dark:hover:text-white light:hover:text-gray-900 transition-colors text-sm">Cases de Sucesso</a></li>
+              <li><a href="#blog" className="text-white/60 dark:text-white/60 light:text-gray-600 hover:text-white dark:hover:text-white light:hover:text-gray-900 transition-colors text-sm">Blog</a></li>
+              <li><a href="#" className="text-white/60 dark:text-white/60 light:text-gray-600 hover:text-white dark:hover:text-white light:hover:text-gray-900 transition-colors text-sm">Carreiras</a></li>
             </ul>
           </div>
 

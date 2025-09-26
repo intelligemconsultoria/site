@@ -49,7 +49,7 @@ export function ShareMenu({ article, articleUrl }: ShareMenuProps) {
     <>
       <style>{`
         .share-modal-content {
-          background-color: #13182F !important;
+          background-color: var(--popover) !important;
           opacity: 1 !important;
           backdrop-filter: none !important;
         }
@@ -62,19 +62,19 @@ export function ShareMenu({ article, articleUrl }: ShareMenuProps) {
       <Button 
         variant="outline" 
         onClick={() => setIsOpen(true)}
-        className="border-gray-300 text-gray-600 hover:bg-gray-50 px-8 py-3"
+        className="border-border text-foreground/80 hover:bg-muted px-8 py-3"
       >
         <Share2 className="w-4 h-4 mr-2" />
         Compartilhar
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="share-modal-content bg-white border border-gray-200 text-gray-900 max-w-md shadow-xl">
+        <DialogContent className="share-modal-content bg-popover border border-border text-popover-foreground max-w-md shadow-xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900">
+            <DialogTitle className="text-xl font-bold text-popover-foreground">
               Compartilhar Artigo
             </DialogTitle>
-            <DialogDescription className="text-gray-600">
+            <DialogDescription className="text-muted-foreground">
               Escolha como deseja compartilhar "{article.title}"
             </DialogDescription>
           </DialogHeader>
@@ -83,12 +83,12 @@ export function ShareMenu({ article, articleUrl }: ShareMenuProps) {
             {/* Opção 1: Copiar Link */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Link className="w-5 h-5 text-blue-600" />
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <Link className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Compartilhar com Link</h3>
-                  <p className="text-sm text-gray-600">Copie o link para compartilhar em qualquer lugar</p>
+                  <h3 className="font-semibold text-popover-foreground">Compartilhar com Link</h3>
+                  <p className="text-sm text-muted-foreground">Copie o link para compartilhar em qualquer lugar</p>
                 </div>
               </div>
               
@@ -96,11 +96,11 @@ export function ShareMenu({ article, articleUrl }: ShareMenuProps) {
                 <Input 
                   value={articleUrl} 
                   readOnly 
-                  className="bg-gray-50 border-gray-200 text-gray-700"
+                  className="bg-input-background border-border text-foreground"
                 />
                 <Button 
                   onClick={handleCopyLink}
-                  className={`px-4 ${copied ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                  className={`px-4 ${copied ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-primary hover:bg-primary/90'}`}
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
@@ -108,23 +108,23 @@ export function ShareMenu({ article, articleUrl }: ShareMenuProps) {
             </div>
 
             {/* Separador */}
-            <div className="border-t border-gray-200"></div>
+            <div className="border-t border-border"></div>
 
             {/* Opção 2: LinkedIn */}
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <Linkedin className="w-5 h-5 text-blue-700" />
+                <div className="p-2 bg-secondary/10 rounded-lg">
+                  <Linkedin className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Compartilhar no LinkedIn</h3>
-                  <p className="text-sm text-gray-600">Redireciona para a página da IntelliGem no LinkedIn</p>
+                  <h3 className="font-semibold text-popover-foreground">Compartilhar no LinkedIn</h3>
+                  <p className="text-sm text-muted-foreground">Redireciona para a página da IntelliGem no LinkedIn</p>
                 </div>
               </div>
               
               <Button 
                 onClick={handleLinkedInShare}
-                className="w-full bg-blue-700 hover:bg-blue-800 text-white py-3"
+                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground py-3"
               >
                 <Linkedin className="w-4 h-4 mr-2" />
                 Ir para LinkedIn

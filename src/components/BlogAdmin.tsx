@@ -17,6 +17,7 @@ import {
 import { blogService, BlogArticle } from "../services/blogService";
 import { ArticleEditor } from "./ArticleEditor";
 import { toast } from "sonner";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface BlogAdminProps {
   onBack: () => void;
@@ -132,15 +133,15 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
       {/* Header */}
-      <div className="bg-gradient-to-b from-gray-900/50 to-transparent py-4 border-b border-white/10">
+      <div className="bg-white dark:bg-gradient-to-b dark:from-gray-900/50 dark:to-transparent py-4 border-b border-gray-200 dark:border-white/10">
         <div className="container mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-white hover:text-emerald-300 hover:bg-emerald-500/20 gap-2 transition-all duration-300 hover:scale-105"
+              className="text-gray-900 dark:text-white hover:text-emerald-300 hover:bg-emerald-500/20 gap-2 transition-all duration-300 hover:scale-105"
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar
@@ -152,16 +153,19 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
               </span>
             </h1>
             
-            {onLogout && (
-              <Button
-                variant="ghost"
-                onClick={onLogout}
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/20 gap-2 transition-all duration-300 hover:scale-105"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Sair
-              </Button>
-            )}
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              {onLogout && (
+                <Button
+                  variant="ghost"
+                  onClick={onLogout}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/20 gap-2 transition-all duration-300 hover:scale-105"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Sair
+                </Button>
+              )}
+            </div>
           </div>
 
           <Button 
@@ -189,17 +193,17 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
-                <span className="ml-3 text-white/70">Carregando artigos...</span>
+                <span className="ml-3 text-gray-600 dark:text-white/70">Carregando artigos...</span>
               </div>
             ) : (
               <div className="grid gap-6">
                 {articles.map((article) => (
-                  <Card key={article.id} className="bg-white/5 border-white/10">
+                  <Card key={article.id} className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
-                            <h3 className="text-xl font-semibold text-white">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                               {article.title}
                             </h3>
                             {article.featured && (
@@ -217,11 +221,11 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                             </Badge>
                           </div>
                           
-                          <p className="text-white/70 mb-4 line-clamp-2">
+                          <p className="text-gray-600 dark:text-white/70 mb-4 line-clamp-2">
                             {article.excerpt}
                           </p>
                           
-                          <div className="flex items-center gap-4 text-sm text-white/60">
+                          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-white/60">
                             <span>Por {article.author}</span>
                             <span>•</span>
                             <span>{article.category}</span>
@@ -237,7 +241,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                             variant="ghost"
                             size="sm"
                             onClick={() => handleEdit(article)}
-                            className="text-white hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:scale-110"
+                            className="text-gray-700 dark:text-white hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:scale-110"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -245,7 +249,7 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDelete(article.id)}
-                            className="text-white hover:text-red-300 hover:bg-red-500/20 transition-all duration-300 hover:scale-110"
+                            className="text-gray-700 dark:text-white hover:text-red-300 hover:bg-red-500/20 transition-all duration-300 hover:scale-110"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -256,13 +260,13 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                 ))}
                 
                 {articles.length === 0 && (
-                  <Card className="bg-white/5 border-white/10">
+                  <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                     <CardContent className="p-12 text-center">
-                      <BookOpen className="w-16 h-16 text-white/30 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-white mb-2">
+                      <BookOpen className="w-16 h-16 text-gray-400 dark:text-white/30 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                         Nenhum artigo encontrado
                       </h3>
-                      <p className="text-white/70 mb-6">
+                      <p className="text-gray-600 dark:text-white/70 mb-6">
                         Comece criando seu primeiro artigo clicando em "Novo Artigo"
                       </p>
                       <Button 
@@ -281,69 +285,69 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
 
           <TabsContent value="stats" className="mt-6">
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
                     <BookOpen className="w-5 h-5 text-emerald-400" />
                     Total de Artigos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
                     {stats.totalArticles || 0}
                   </div>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-gray-600 dark:text-white/60 text-sm">
                     {stats.publishedArticles || 0} publicados
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
                     <Eye className="w-5 h-5 text-blue-400" />
                     Visualizações
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
                     {stats.totalViews || 0}
                   </div>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-gray-600 dark:text-white/60 text-sm">
                     +{stats.viewsThisMonth || 0} este mês
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
                     <Users className="w-5 h-5 text-purple-400" />
                     Inscritos
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
                     {stats.totalSubscribers || 0}
                   </div>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-gray-600 dark:text-white/60 text-sm">
                     Newsletter ativa
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-white flex items-center gap-2">
+                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-orange-400" />
                     Crescimento
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-white">
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
                     +{stats.growthRate || 0}%
                   </div>
-                  <p className="text-white/60 text-sm">
+                  <p className="text-gray-600 dark:text-white/60 text-sm">
                     Últimos 30 dias
                   </p>
                 </CardContent>
@@ -351,17 +355,17 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">Artigos Recentes</CardTitle>
+                  <CardTitle className="text-gray-900 dark:text-white">Artigos Recentes</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {articles.slice(0, 5).map((article) => (
-                      <div key={article.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                      <div key={article.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-white/5 rounded-lg">
                         <div>
-                          <h4 className="text-white font-medium">{article.title}</h4>
-                          <p className="text-white/60 text-sm">
+                          <h4 className="text-gray-900 dark:text-white font-medium">{article.title}</h4>
+                          <p className="text-gray-600 dark:text-white/60 text-sm">
                             {new Date(article.created_at).toLocaleDateString('pt-BR')}
                           </p>
                         </div>
@@ -379,9 +383,9 @@ export function BlogAdmin({ onBack, onLogout, onNavigateToEditor }: BlogAdminPro
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/5 border-white/10">
+              <Card className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10">
                 <CardHeader>
-                  <CardTitle className="text-white">Categorias</CardTitle>
+                  <CardTitle className="text-gray-900 dark:text-white">Categorias</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">

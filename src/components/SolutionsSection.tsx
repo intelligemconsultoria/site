@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import gemFlowLogo from "figma:asset/5175adeec9ce8271bb85bf293b9214728409a71a.png";
@@ -36,8 +37,10 @@ export function SolutionsSection() {
   ];
 
   return (
-    <section id="solucoes" className="py-20 bg-gradient-to-b from-gray-900/50 to-black">
-      <div className="container mx-auto px-6">
+    <section id="solucoes" className="relative min-h-screen flex items-center bg-gradient-to-br from-background via-background dark:to-blue-900/20 light:to-white pt-20">
+      {/* Gradiente preto para quebrar o visual no tema claro */}
+      <div className="light:bg-gradient-to-b light:from-custom-dark light:to-transparent light:h-32 light:absolute light:top-0 light:left-0 light:right-0 light:z-0"></div>
+      <div className="container mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl mb-6">
             <span className="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
@@ -105,18 +108,18 @@ export function SolutionsSection() {
                   </div>
                 </div>
 
-                <p className="text-lg text-white/80">
+                <p className="text-xl text-foreground/80">
                   {solution.description}
                 </p>
 
-                <p className="text-white/60 leading-relaxed">
+                <p className="text-xl text-foreground/60 leading-relaxed">
                   {solution.details}
                 </p>
 
-                <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300">
+                <Card className="border border-black dark:border-white/10 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300">
                   <CardContent className="p-6">
-                    <h4 className="text-white mb-2">Principais benefícios:</h4>
-                    <ul className="text-white/70 text-sm space-y-1">
+                    <h4 className="text-xl mb-2">Principais benefícios:</h4>
+                    <ul className="text-xl/70 text-sm space-y-1">
                       {solution.name === 'GemFlow' && (
                         <>
                           <li>• Redução de até 80% no tempo de processamento</li>
@@ -159,6 +162,8 @@ export function SolutionsSection() {
           ))}
         </div>
       </div>
+      {/* Gradiente preto na parte inferior para quebrar o visual no tema claro */}
+      <div className="light:bg-gradient-to-t light:from-custom-gray light:to-transparent light:h-24 light:absolute light:bottom-0 light:left-0 light:right-0 light:z-0"></div>
     </section>
   );
 }

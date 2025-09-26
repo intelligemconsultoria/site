@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardContent } from "./ui/card";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Button } from "./ui/button";
@@ -42,7 +43,7 @@ export function BlogSection({ onNavigateToBlog, onNavigateToArticle }: BlogSecti
   ];
 
   return (
-    <section id="blog" className="py-20 bg-gradient-to-b from-gray-900/30 to-black">
+    <section id="blog" className="py-20 bg-white dark:bg-gradient-to-b dark:from-gray-900/30 dark:to-black">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl lg:text-5xl mb-6">
@@ -50,7 +51,7 @@ export function BlogSection({ onNavigateToBlog, onNavigateToArticle }: BlogSecti
               Insights & Conhecimento
             </span>
           </h2>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-white/70 max-w-3xl mx-auto">
             Mantenha-se atualizado com as últimas tendências em dados, IA e automação.
           </p>
         </div>
@@ -59,7 +60,7 @@ export function BlogSection({ onNavigateToBlog, onNavigateToArticle }: BlogSecti
           {articles.map((article, index) => (
             <Card 
               key={index}
-              className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 group overflow-hidden cursor-pointer"
+              className="border border-black dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-gray-300 dark:hover:border-white/20 transition-all duration-300 group overflow-hidden cursor-pointer"
               onClick={() => onNavigateToArticle?.(article.slug)}
             >
               <div className="relative overflow-hidden">
@@ -77,25 +78,25 @@ export function BlogSection({ onNavigateToBlog, onNavigateToArticle }: BlogSecti
               </div>
               
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-center justify-between text-xs text-white/60">
+                <div className="flex items-center justify-between text-xs text-gray-500 dark:text-white/60">
                   <span>{article.date}</span>
                   <span>{article.read_time} de leitura</span>
                 </div>
 
-                <h3 className="text-white text-xl leading-tight group-hover:text-emerald-400 transition-colors">
+                <h3 className="text-gray-900 dark:text-white text-xl leading-tight group-hover:text-emerald-400 transition-colors">
                   {article.title}
                 </h3>
 
-                <p className="text-white/60 text-sm leading-relaxed">
+                <p className="text-gray-600 dark:text-white/60 text-sm leading-relaxed">
                   {article.excerpt}
                 </p>
 
-                <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                  <span className="text-white/70 text-sm">{article.author}</span>
+                <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-white/10">
+                  <span className="text-gray-600 dark:text-white/70 text-sm">{article.author}</span>
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    className="text-emerald-400 hover:text-white hover:bg-emerald-400/20 p-0 h-auto"
+                    className="text-emerald-400 hover:text-gray-900 dark:hover:text-white hover:bg-emerald-400/20 p-0 h-auto"
                     onClick={() => onNavigateToArticle?.(article.slug)}
                   >
                     Ler mais →
@@ -110,7 +111,7 @@ export function BlogSection({ onNavigateToBlog, onNavigateToArticle }: BlogSecti
           <Button 
             variant="outline" 
             size="lg"
-            className="border-white/20 text-white hover:bg-white/10 hover:border-white/40 px-8"
+            className="border border-black dark:border-white/20 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/40 px-8"
             onClick={onNavigateToBlog}
           >
             Ver Todos os Artigos

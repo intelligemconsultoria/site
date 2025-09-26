@@ -20,6 +20,12 @@ import { blogService, BlogArticle } from "./services/blogService";
 export default function App() {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
+  // Inicializar tema
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('intelligem-theme') || 'dark';
+    document.documentElement.classList.add(savedTheme);
+  }, []);
+
   // Função para obter a página atual baseada na URL
   const getCurrentPageFromURL = () => {
     const path = window.location.pathname;
@@ -280,7 +286,7 @@ export default function App() {
 
   return (
     <>
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header />
         <HeroSection />
         <AboutSection />

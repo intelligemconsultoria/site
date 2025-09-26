@@ -5,6 +5,12 @@
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Web Interface Design for IntelliGem</title>
+      <script>
+        (function() {
+          const theme = localStorage.getItem('intelligem-theme') || 'dark';
+          document.documentElement.classList.add(theme);
+        })();
+      </script>
     </head>
 
     <body>

@@ -522,14 +522,14 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
         }
       `}</style>
       
-      <div className="min-h-screen bg-[#0b0f12] text-gray-100">
+      <div className="min-h-screen bg-background text-foreground">
       {/* Header minimalista */}
-      <div className="sticky top-0 z-10 bg-[#0f1418]/80 backdrop-blur border-b border-gray-800">
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur border-b border-border">
         <div className="max-w-screen-lg mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" className="text-gray-300 hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:border-emerald-500/30" onClick={onCancel}><X className="w-6 h-6"/> Sair</Button>
-            <Separator orientation="vertical" className="h-6 bg-gray-800"/>
-            <span className="text-sm text-white/70 flex items-center gap-2">
+            <Button variant="ghost" className="text-muted-foreground hover:text-emerald-300 hover:bg-emerald-500/20 transition-all duration-300 hover:border-emerald-500/30" onClick={onCancel}><X className="w-6 h-6"/> Sair</Button>
+            <Separator orientation="vertical" className="h-6 bg-border"/>
+            <span className="text-sm text-muted-foreground flex items-center gap-2">
               {saving ? (<><Clock className="w-6 h-6 animate-spin"/> Salvando…</>) : (savedAt ? <>Salvo • {savedAt.toLocaleTimeString()}</> : '—')}
             </span>
           </div>
@@ -562,13 +562,13 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             setDirty(true);
           }}
           placeholder="Escreva um subtítulo (opcional)"
-          className="bg-transparent border-0 text-lg md:text-xl text-white/70 placeholder:text-white/30 mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
+          className="bg-transparent border-0 text-lg md:text-xl text-foreground/70 placeholder:text-muted-foreground mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
         />
 
         {/* Editor com borda e toolbar fixo */}
-        <div className="mt-12 border border-gray-700 rounded-lg overflow-hidden bg-[#0f1418]">
+        <div className="mt-12 border border-border rounded-lg overflow-hidden bg-card">
           {/* Toolbar fixo no topo */}
-          <div className="sticky top-0 z-10 bg-[#0f1418] border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <IconBtn onClick={() => applyInline('bold')} icon={<Bold className="w-6 h-6"/>} title="Negrito" ariaLabel="Negrito"/>
               <IconBtn onClick={() => applyInline('italic')} icon={<Italic className="w-6 h-6"/>} title="Itálico" ariaLabel="Itálico"/>
@@ -658,7 +658,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                         value={author}
                         onChange={(e) => { setAuthor(e.target.value); setDirty(true) }}
                         placeholder="Nome do autor..."
-                        className="bg-[#0f1418] border-gray-700 text-white placeholder:text-gray-500 focus:border-emerald-500"
+                        className="bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:border-emerald-500"
                       />
                     </div>
 
@@ -697,7 +697,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                         value={tags.join(', ')}
                         onChange={(e) => { setTags(e.target.value.split(',').map(t => t.trim()).filter(Boolean)); setDirty(true) }}
                         placeholder="tag1, tag2, tag3"
-                        className="bg-[#0f1418] border-gray-700 text-white placeholder:text-gray-500 focus:border-emerald-500"
+                        className="bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:border-emerald-500"
                       />
                     </div>
 
@@ -710,7 +710,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                           value={imageUrl}
                           onChange={(e) => setImageUrl(e.target.value)}
                           placeholder="https://..."
-                          className="bg-[#0f1418] border-gray-700 text-white placeholder:text-gray-500 focus:border-emerald-500"
+                          className="bg-input-background border-border text-foreground placeholder:text-muted-foreground focus:border-emerald-500"
                         />
                         <Button
                           variant="outline"
@@ -778,7 +778,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
 
         {/* Slash menu */}
         {slashOpen && (
-          <div ref={slashMenuRef} className="mt-2 w-full max-w-sm rounded-xl border border-gray-800 bg-[#0f1418] p-2 shadow-xl">
+          <div ref={slashMenuRef} className="mt-2 w-full max-w-sm rounded-xl border border-border bg-card p-2 shadow-xl">
             <SlashItem icon={<Heading1 className="w-6 h-6"/>} label="Heading 1" onClick={() => { wrapBlock('h1'); setSlashOpen(false) }}/>
             <SlashItem icon={<Heading2 className="w-6 h-6"/>} label="Heading 2" onClick={() => { wrapBlock('h2'); setSlashOpen(false) }}/>
             <SlashItem icon={<List className="w-6 h-6"/>} label="Lista" onClick={() => { makeList(false); setSlashOpen(false) }}/>
@@ -808,9 +808,9 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
           </DialogHeader>
           <div className="space-y-2">
             <Label htmlFor="img-url">URL</Label>
-            <Input id="img-url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://…" className="bg-[#0f1418] border-gray-700"/>
+            <Input id="img-url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://…" className="bg-input-background border-border"/>
             <div className="flex gap-2 justify-end mt-4">
-              <Button variant="outline" className="border-gray-700 hover:bg-emerald-500/20 hover:text-emerald-300 hover:border-emerald-500 transition-all duration-300" onClick={() => setImageDialogOpen(false)}>Cancelar</Button>
+              <Button variant="outline" className="border-border hover:bg-emerald-500/20 hover:text-emerald-300 hover:border-emerald-500 transition-all duration-300" onClick={() => setImageDialogOpen(false)}>Cancelar</Button>
               <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-300 hover:shadow-emerald-500/25 hover:scale-105" onClick={() => { if (imageUrl.trim()) insertImage(imageUrl.trim()); setImageDialogOpen(false); setImageUrl('') }}>Inserir</Button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 
 :root {
   --font-size: 16px;
@@ -47,6 +48,46 @@
   --intelligem-amethyst: #512f82;
   --intelligem-deep-blue: #1b3f82;
   --intelligem-white: #ffffff;
+}
+
+.light {
+  --background: #ffffff;
+  --foreground: #030405;
+  --card: rgba(49, 175, 157, 0.05);
+  --card-foreground: #030405;
+  --popover: #ffffff;
+  --popover-foreground: #030405;
+  --primary: #31af9d;
+  --primary-foreground: #ffffff;
+  --secondary: #136eae;
+  --secondary-foreground: #ffffff;
+  --muted: rgba(3, 4, 5, 0.05);
+  --muted-foreground: rgba(3, 4, 5, 0.6);
+  --accent: #512f82;
+  --accent-foreground: #ffffff;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(3, 4, 5, 0.1);
+  --input: transparent;
+  --input-background: rgba(3, 4, 5, 0.02);
+  --switch-background: #e2e8f0;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #31af9d;
+  --chart-1: #31af9d;
+  --chart-2: #136eae;
+  --chart-3: #512f82;
+  --chart-4: #1b3f82;
+  --chart-5: #030405;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #030405;
+  --sidebar-primary: #31af9d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(49, 175, 157, 0.05);
+  --sidebar-accent-foreground: #030405;
+  --sidebar-border: rgba(3, 4, 5, 0.1);
+  --sidebar-ring: #31af9d;
 }
 
 .dark {
