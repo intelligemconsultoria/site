@@ -253,6 +253,7 @@ export function BlogPage({ onBack, onNavigateToArticle }: BlogPageProps) {
                       variant="ghost"
                       size="sm"
                       className="text-emerald-400 hover:text-white hover:bg-emerald-400/20 p-0 h-auto"
+                      onClick={() => onNavigateToArticle?.(article.slug)}
                     >
                       Ler mais →
                     </Button>

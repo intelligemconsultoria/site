@@ -6,6 +6,8 @@ import { Badge } from "./ui/badge";
 import { ArrowLeft, Calendar, Clock, User, Share2, BookOpen } from "lucide-react";
 import { blogService, BlogArticle } from "../services/blogService";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface ArticlePageProps {
   slug: string;
@@ -50,12 +52,10 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
           url: window.location.href,
         });
       } catch (err) {
-        // Fallback para copiar URL
         navigator.clipboard.writeText(window.location.href);
         toast.success('Link copiado para a área de transferência!');
       }
     } else {
-      // Fallback para copiar URL
       navigator.clipboard.writeText(window.location.href);
       toast.success('Link copiado para a área de transferência!');
     }
@@ -63,10 +63,10 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mx-auto mb-4"></div>
-          <p className="text-white/70">Carregando artigo...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-gray-700">Carregando artigo...</p>
         </div>
       </div>
     );
@@ -74,11 +74,11 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
 
   if (error || !article) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl text-white mb-4">Artigo não encontrado</h1>
-          <p className="text-white/70 mb-6">{error}</p>
-          <Button onClick={onBack} className="bg-emerald-400 text-black hover:bg-emerald-500">
+          <h1 className="text-2xl text-gray-900 mb-4">Artigo não encontrado</h1>
+          <p className="text-gray-700 mb-6">{error}</p>
+          <Button onClick={onBack} className="bg-emerald-500 text-white hover:bg-emerald-600">
             Voltar ao Blog
           </Button>
         </div>
@@ -87,50 +87,54 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      {/* Header */}
-      <div className="bg-gradient-to-b from-gray-900/50 to-transparent py-8 border-b border-white/10">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-white">
+      {/* Header minimalista */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-white hover:text-emerald-400 hover:bg-white/10 gap-2"
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar ao Blog
             </Button>
             
-            <Button
-              variant="ghost"
-              onClick={handleShare}
-              className="text-white hover:text-emerald-400 hover:bg-white/10 gap-2"
-            >
-              <Share2 className="w-4 h-4" />
-              Compartilhar
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={handleShare}
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 gap-2"
+              >
+                <Share2 className="w-4 h-4" />
+                Compartilhar
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Conteúdo do artigo */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="max-w-4xl mx-auto">
+      {/* Conteúdo principal centralizado */}
+      <main className="max-w-4xl mx-auto px-6 py-12">
+        <article className="max-w-3xl mx-auto">
+          
           {/* Cabeçalho do artigo */}
-          <div className="mb-8">
-            <Badge className="bg-emerald-400 text-black mb-4">
+          <header className="mb-16 text-center">
+            <Badge className="bg-gradient-to-r from-emerald-400 to-blue-400 text-white mb-6 text-sm px-4 py-2 rounded-full shadow-lg">
               {article.category}
             </Badge>
             
-            <h1 className="text-4xl lg:text-5xl text-white mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-6xl text-gray-900 mb-8 leading-tight font-bold">
               {article.title}
             </h1>
             
-            <p className="text-xl text-white/70 mb-8 leading-relaxed">
+            <p className="text-xl lg:text-2xl text-gray-600 mb-12 leading-relaxed max-w-2xl mx-auto">
               {article.excerpt}
             </p>
             
-            <div className="flex items-center gap-6 text-white/60 text-sm mb-8">
+            {/* Metadados do artigo */}
+            <div className="flex items-center justify-center gap-8 text-gray-500 text-sm mb-8">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 {article.author}
@@ -143,41 +147,140 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
                 <Clock className="w-4 h-4" />
                 {article.read_time}
               </div>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4" />
-                {article.tags.length} tags
-              </div>
             </div>
-          </div>
+          </header>
 
-          {/* Imagem principal */}
-          <div className="mb-12">
+          {/* Imagem principal - grande e centralizada */}
+          <div className="mb-16">
             <ImageWithFallback
               src={article.image_url}
               alt={article.title}
-              className="w-full h-64 lg:h-96 object-cover rounded-lg"
+              className="w-full h-64 lg:h-[600px] object-cover rounded-lg shadow-lg"
             />
           </div>
 
-          {/* Conteúdo do artigo */}
-          <Card className="bg-white/5 border-white/10 mb-8">
-            <CardContent className="p-8">
-              <div 
-                className="prose prose-invert prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ 
-                  __html: article.content.replace(/\n/g, '<br>') 
-                }}
-              />
-            </CardContent>
-          </Card>
+          {/* Conteúdo do artigo - texto centralizado com Markdown */}
+          <div className="prose prose-lg prose-gray max-w-none text-gray-800 leading-relaxed text-lg">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h1: ({ children }) => (
+                  <h1 className="text-4xl font-bold text-gray-900 mb-8 mt-12 first:mt-0 leading-tight">
+                    {children}
+                  </h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="text-3xl font-bold text-gray-900 mb-6 mt-10 first:mt-0 leading-tight">
+                    {children}
+                  </h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 mt-8 first:mt-0 leading-tight">
+                    {children}
+                  </h3>
+                ),
+                h4: ({ children }) => (
+                  <h4 className="text-xl font-bold text-gray-900 mb-3 mt-6 first:mt-0 leading-tight">
+                    {children}
+                  </h4>
+                ),
+                p: ({ children }) => (
+                  <p className="mb-6 leading-relaxed text-gray-800 text-lg">
+                    {children}
+                  </p>
+                ),
+                ul: ({ children }) => (
+                  <ul className="mb-6 pl-6 space-y-3 list-disc">
+                    {children}
+                  </ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="mb-6 pl-6 space-y-3 list-decimal">
+                    {children}
+                  </ol>
+                ),
+                li: ({ children }) => (
+                  <li className="text-gray-800 leading-relaxed text-lg">
+                    {children}
+                  </li>
+                ),
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-4 border-emerald-400 pl-6 py-4 mb-8 bg-gray-50 italic text-gray-700 text-lg rounded-r-lg">
+                    {children}
+                  </blockquote>
+                ),
+                code: ({ children, className }) => {
+                  const isInline = !className;
+                  if (isInline) {
+                    return (
+                      <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono text-gray-800">
+                        {children}
+                      </code>
+                    );
+                  }
+                  return (
+                    <code className={className}>
+                      {children}
+                    </code>
+                  );
+                },
+                pre: ({ children }) => (
+                  <pre className="bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto mb-8 text-sm">
+                    {children}
+                  </pre>
+                ),
+                a: ({ children, href }) => (
+                  <a 
+                    href={href} 
+                    className="text-emerald-600 hover:text-emerald-700 underline font-medium"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {children}
+                  </a>
+                ),
+                strong: ({ children }) => (
+                  <strong className="font-bold text-gray-900">
+                    {children}
+                  </strong>
+                ),
+                em: ({ children }) => (
+                  <em className="italic text-gray-800">
+                    {children}
+                  </em>
+                ),
+                hr: () => (
+                  <hr className="my-8 border-gray-300" />
+                ),
+                table: ({ children }) => (
+                  <div className="overflow-x-auto mb-8">
+                    <table className="min-w-full border-collapse border border-gray-300">
+                      {children}
+                    </table>
+                  </div>
+                ),
+                th: ({ children }) => (
+                  <th className="border border-gray-300 px-4 py-2 bg-gray-50 font-bold text-gray-900 text-left">
+                    {children}
+                  </th>
+                ),
+                td: ({ children }) => (
+                  <td className="border border-gray-300 px-4 py-2 text-gray-800">
+                    {children}
+                  </td>
+                )
+              }}
+            >
+              {article.content}
+            </ReactMarkdown>
+          </div>
 
-          {/* Tags */}
-          {article.tags.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg text-white mb-4">Tags:</h3>
-              <div className="flex flex-wrap gap-2">
+          {/* Tags no final */}
+          {article.tags && article.tags.length > 0 && (
+            <div className="mt-16 pt-8 border-t border-gray-200">
+              <div className="flex flex-wrap gap-2 justify-center">
                 {article.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline" className="border-white/20 text-white/70">
+                  <Badge key={index} variant="outline" className="border-gray-300 text-gray-600 hover:bg-gray-50">
                     #{tag}
                   </Badge>
                 ))}
@@ -185,22 +288,25 @@ export function ArticlePage({ slug, onBack }: ArticlePageProps) {
             </div>
           )}
 
-          {/* Botões de ação */}
-          <div className="flex gap-4">
-            <Button onClick={onBack} className="bg-emerald-400 text-black hover:bg-emerald-500">
+          {/* Botões de ação no final */}
+          <div className="mt-16 flex gap-4 justify-center">
+            <Button 
+              onClick={onBack} 
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 px-8 py-3 shadow-lg"
+            >
               Voltar ao Blog
             </Button>
             <Button 
               variant="outline" 
               onClick={handleShare}
-              className="border-white/20 text-white hover:bg-white/10"
+              className="border-gray-300 text-gray-600 hover:bg-gray-50 px-8 py-3"
             >
               <Share2 className="w-4 h-4 mr-2" />
               Compartilhar
             </Button>
           </div>
-        </div>
-      </div>
+        </article>
+      </main>
     </div>
   );
 }

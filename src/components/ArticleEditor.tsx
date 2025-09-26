@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
@@ -11,7 +10,7 @@ import {
   Bold, Italic, Heading1, Heading2, Link as LinkIcon, Quote, List, ListOrdered, Code,
   Image as ImageIcon, Minus, Save, Globe, Clock, X, AlignLeft, Type, Eye, Settings, ChevronRight, ChevronLeft
 } from 'lucide-react'
-import { BlogArticle } from '../services/blogService'
+import { BlogArticle, blogService } from '../services/blogService'
 import { toast } from 'sonner'
 
 /**
@@ -51,6 +50,11 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState<Date | null>(null)
   const [dirty, setDirty] = useState(false)
+  
+  // Debug: monitorar mudanças no dirty
+  useEffect(() => {
+    console.log('🔄 Estado dirty mudou para:', dirty);
+  }, [dirty])
   const [slashOpen, setSlashOpen] = useState(false)
 
   // ===== Helpers de formatação =====
@@ -187,14 +191,26 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
     }
   }
 
-  // ===== Autosave =====
-  const debouncedSave = useDebouncedCallback(async () => {
-    console.log('🔄 debouncedSave iniciado');
+  // ===== Autosave DIRETO (sem usar onSave do App.tsx) =====
+  const saveArticleDirect = async () => {
+    console.log('🔄 saveArticleDirect iniciado - SALVAMENTO DIRETO');
+    console.log('📊 Estado atual:', { 
+      title: title.trim(), 
+      subtitle: subtitle.trim(), 
+      author: author.trim(), 
+      category: category.trim(),
+      tagsCount: tags.length,
+      articleId: articleId || article?.id
+    });
     setSaving(true)
     try {
       const html = editorRef.current?.innerHTML || ''
+      console.log('📄 HTML do editor:', html.substring(0, 100) + '...');
       const contentMd = htmlToMarkdown(html)
-      const data: Partial<BlogArticle> = {
+      console.log('📝 Markdown convertido:', contentMd.substring(0, 100) + '...');
+      
+      const articleData = {
+        id: articleId || article?.id, // Incluir ID se existir
         title: title.trim(),
         excerpt: subtitle.trim(),
         author: author.trim(),
@@ -202,37 +218,76 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
         tags,
         content: contentMd,
         image_url: firstImageSrc(html) || article?.image_url || '',
-        slug: title ? slugify(title) : undefined,
+        slug: title ? slugify(title) : '',
         date: article?.date || new Date().toISOString(),
         created_at: article?.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        published: false
+        published: false,
+        read_time: article?.read_time || '1 min',
+        featured: article?.featured || false
       }
-      console.log('💾 Chamando onSave com autosave (isPublish: false)');
-      const result = await onSave(data, false) // false = autosave, não redireciona
-      console.log('✅ onSave retornou:', result);
+      
+      console.log('💾 Salvando DIRETAMENTE via blogService:', { 
+        id: articleData.id, 
+        title: articleData.title, 
+        excerpt: articleData.excerpt, 
+        author: articleData.author, 
+        category: articleData.category,
+        tagsCount: articleData.tags?.length,
+        contentLength: articleData.content?.length,
+        slug: articleData.slug,
+        published: articleData.published
+      });
+      
+      // SALVAMENTO DIRETO - não usa onSave do App.tsx
+      let result: BlogArticle;
+      if (articleData.id) {
+        console.log('📝 Atualizando artigo existente diretamente:', articleData.id);
+        result = await blogService.updateArticle(articleData.id, articleData) as BlogArticle;
+      } else {
+        console.log('🆕 Criando novo artigo diretamente');
+        result = await blogService.createArticle(articleData);
+      }
+      
+      console.log('✅ Artigo salvo DIRETAMENTE com sucesso:', result);
+      
       // Se é um novo artigo e recebemos um ID de volta, salvar o ID
       if (!articleId && result && typeof result === 'object' && 'id' in result) {
+        console.log('🆔 Novo artigo criado, salvando ID:', result.id);
         setArticleId(result.id as string)
       }
-      setSavedAt(new Date()); setDirty(false)
+      
+      setSavedAt(new Date()); 
+      setDirty(false)
+      console.log('✅ saveArticleDirect concluído com sucesso');
     } catch (err) {
-      console.error('❌ Erro no debouncedSave:', err);
+      console.error('❌ Erro no saveArticleDirect:', err);
       toast.error('Erro ao salvar rascunho')
     } finally {
       setSaving(false)
     }
-  }, 1000)
+  }
 
-  useEffect(() => { 
-    console.log('🔄 useEffect executado:', { dirty, title: title.substring(0, 20), subtitle: subtitle.substring(0, 20) });
-    if (dirty) {
-      console.log('💾 dirty=true, executando debouncedSave');
-      debouncedSave();
+  // Autosave DIRETO com setTimeout
+  useEffect(() => {
+    if (dirty && !saving) {
+      console.log('💾 dirty=true, agendando autosave DIRETO em 1 segundo');
+      const timer = setTimeout(() => {
+        console.log('⏰ Timer executado, chamando saveArticleDirect');
+        saveArticleDirect();
+      }, 1000);
+      
+      return () => {
+        console.log('🧹 Limpando timer');
+        clearTimeout(timer);
+      };
     }
-  }, [title, subtitle, author, category, tags, dirty])
+  }, [dirty, saving]);
 
-  const onInput = () => setDirty(true)
+  const onInput = () => {
+    console.log('📝 onInput chamado - setando dirty=true');
+    setDirty(true);
+  }
 
   const publish = async () => {
     // Validação obrigatória
@@ -265,17 +320,54 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
 
     try {
       const contentMd = htmlToMarkdown(html)
-      await onSave({
-        title, excerpt: subtitle, author, category, tags, content: contentMd,
-        slug: title ? slugify(title) : undefined,
+      
+      const articleData = {
+        id: articleId || article?.id, // Incluir ID se existir
+        title, 
+        excerpt: subtitle, 
+        author, 
+        category, 
+        tags, 
+        content: contentMd,
+        slug: title ? slugify(title) : '',
         image_url: firstImageSrc(html) || article?.image_url || '',
         date: article?.date || new Date().toISOString(),
         created_at: article?.created_at || new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        published: true
-      }, true) // true = publicação, redireciona
+        published: true,
+        read_time: article?.read_time || '1 min',
+        featured: article?.featured || false
+      }
+      
+      console.log('📤 Publicando artigo DIRETAMENTE:', articleData);
+      
+      // PUBLICAR DIRETAMENTE - não usa onSave do App.tsx
+      let result: BlogArticle;
+      if (articleData.id) {
+        console.log('📝 Atualizando artigo existente para publicação:', articleData.id);
+        result = await blogService.updateArticle(articleData.id, articleData) as BlogArticle;
+      } else {
+        console.log('🆕 Criando novo artigo para publicação');
+        result = await blogService.createArticle(articleData);
+      }
+      
+      console.log('✅ Artigo publicado DIRETAMENTE com sucesso:', result);
+      
+      // Se é um novo artigo e recebemos um ID de volta, salvar o ID
+      if (!articleId && result && typeof result === 'object' && 'id' in result) {
+        console.log('🆔 Novo artigo publicado, salvando ID:', result.id);
+        setArticleId(result.id as string)
+      }
+      
       toast.success('Artigo publicado!')
-    } catch {
+      
+      // Redirecionar manualmente após publicação
+      console.log('📤 Redirecionando para admin após publicação');
+      window.history.replaceState({}, '', '/admin');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      
+    } catch (err) {
+      console.error('❌ Erro ao publicar:', err);
       toast.error('Falha ao publicar')
     }
   }
@@ -325,8 +417,8 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={debouncedSave.flush} className="bg-gray-600 hover:bg-gray-500 text-white"><Save className="w-6 h-6 mr-2"/>Salvar</Button>
-            <Button onClick={publish} className="bg-emerald-600 hover:bg-emerald-500 text-white"><Globe className="w-6 h-6 mr-2"/>Publicar</Button>
+            <Button onClick={saveArticleDirect} className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg transition-all duration-200"><Save className="w-6 h-6 mr-2"/>Salvar</Button>
+            <Button onClick={publish} className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200"><Globe className="w-6 h-6 mr-2"/>Publicar</Button>
           </div>
         </div>
       </div>
@@ -336,14 +428,22 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
         {/* Título */}
         <Input
           value={title}
-          onChange={(e) => { setTitle(e.target.value); setDirty(true) }}
+          onChange={(e) => { 
+            console.log('📝 Título mudou:', e.target.value.substring(0, 20));
+            setTitle(e.target.value); 
+            setDirty(true);
+          }}
           placeholder="Título"
           className="bg-transparent border-0 text-4xl md:text-5xl font-extrabold tracking-tight placeholder:text-white/20 focus-visible:ring-0 focus-visible:border-0 px-0"
         />
         {/* Subtítulo */}
         <Input
           value={subtitle}
-          onChange={(e) => { setSubtitle(e.target.value); setDirty(true) }}
+          onChange={(e) => { 
+            console.log('📝 Subtítulo mudou:', e.target.value.substring(0, 20));
+            setSubtitle(e.target.value); 
+            setDirty(true);
+          }}
           placeholder="Escreva um subtítulo (opcional)"
           className="bg-transparent border-0 text-lg md:text-xl text-white/70 placeholder:text-white/30 mt-3 focus-visible:ring-0 focus-visible:border-0 px-0"
         />
@@ -371,7 +471,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             <Button
               variant="outline"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white gap-2"
+              className="border-purple-500 text-purple-300 hover:bg-purple-600 hover:text-white hover:border-purple-400 gap-2 shadow-lg transition-all duration-200"
             >
               <Settings className="w-4 h-4" />
               Configurações
@@ -393,14 +493,14 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
           />
         </div>
 
-        {/* Sidebar deslizante de configurações - Renderizado via Portal */}
-        {sidebarOpen && createPortal(
-          <>
-            {/* Overlay */}
-            <div 
-              className="fixed inset-0 bg-black/50 z-50"
-              onClick={() => setSidebarOpen(false)}
-            />
+        {/* Sidebar deslizante de configurações */}
+        {sidebarOpen && (
+            <>
+              {/* Overlay */}
+              <div 
+                className="fixed inset-0 bg-black/50 z-50"
+                onClick={() => setSidebarOpen(false)}
+              />
             
             {/* Sidebar */}
             <div 
@@ -552,8 +652,7 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
                 </Card>
               </div>
             </div>
-          </>,
-          document.body
+            </>
         )}
 
         {/* Slash menu */}
@@ -590,8 +689,8 @@ export function ArticleEditor({ article, onSave, onCancel }: Props) {
             <Label htmlFor="img-url">URL</Label>
             <Input id="img-url" value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://…" className="bg-[#0f1418] border-gray-700"/>
             <div className="flex gap-2 justify-end mt-4">
-              <Button variant="outline" className="border-gray-700" onClick={() => setImageDialogOpen(false)}>Cancelar</Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-500" onClick={() => { if (imageUrl.trim()) insertImage(imageUrl.trim()); setImageDialogOpen(false); setImageUrl('') }}>Inserir</Button>
+              <Button variant="outline" className="border-gray-700 hover:bg-gray-700" onClick={() => setImageDialogOpen(false)}>Cancelar</Button>
+              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg transition-all duration-200" onClick={() => { if (imageUrl.trim()) insertImage(imageUrl.trim()); setImageDialogOpen(false); setImageUrl('') }}>Inserir</Button>
             </div>
           </div>
         </DialogContent>

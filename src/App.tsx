@@ -18,18 +18,99 @@ import { authService } from "./services/authService";
 import { blogService, BlogArticle } from "./services/blogService";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'home' | 'blog' | 'admin' | 'article' | 'admin-login' | 'reset-password' | 'admin-editor'>('home');
-  const [currentArticleSlug, setCurrentArticleSlug] = useState<string>('');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
-  const navigateToBlog = () => setCurrentPage('blog');
-  const navigateToHome = () => setCurrentPage('home');
-  const navigateToAdmin = () => setCurrentPage('admin');
-  const navigateToArticle = (slug: string) => {
-    setCurrentArticleSlug(slug);
-    setCurrentPage('article');
+  // Função para obter a página atual baseada na URL
+  const getCurrentPageFromURL = () => {
+    const path = window.location.pathname;
+    const search = window.location.search;
+    const hash = window.location.hash;
+    
+    console.log('🔍 [ROUTING] Analisando URL:', { path, search, hash });
+    
+    // Verificar se há tokens de reset de senha na URL
+    const hasResetTokens = search.includes('access_token') || 
+                         hash.includes('access_token') || 
+                         window.location.href.includes('access_token') ||
+                         window.location.href.includes('refresh_token');
+    
+    if (hasResetTokens) {
+      return { page: 'reset-password', slug: '' };
+    }
+    
+    // Roteamento baseado em path
+    if (path === '/admin') {
+      const urlParams = new URLSearchParams(search);
+      const editorMode = urlParams.get('editor');
+      
+      if (editorMode === 'new' || editorMode === 'edit') {
+        return { page: 'admin-editor', slug: '' };
+      }
+      return { page: 'admin', slug: '' };
+    }
+    
+    if (path === '/admin-login') {
+      return { page: 'admin-login', slug: '' };
+    }
+    
+    if (path === '/blog') {
+      return { page: 'blog', slug: '' };
+    }
+    
+    if (path.startsWith('/article/')) {
+      const slug = path.replace('/article/', '');
+      return { page: 'article', slug };
+    }
+    
+    // Página inicial por padrão
+    return { page: 'home', slug: '' };
   };
-  const navigateToEditor = () => setCurrentPage('admin-editor');
+
+  // Função para navegar atualizando a URL
+  const navigateToBlog = () => {
+    window.history.pushState({}, '', '/blog');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+  
+  const navigateToHome = () => {
+    window.history.pushState({}, '', '/');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+  
+  const navigateToAdmin = () => {
+    window.history.pushState({}, '', '/admin');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+  
+  const navigateToArticle = (slug: string) => {
+    console.log('🔗 [NAVIGATION] Navegando para artigo:', slug);
+    window.history.pushState({}, '', `/article/${slug}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+  
+  const navigateToEditor = () => {
+    window.history.pushState({}, '', '/admin?editor=new');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
+
+  // Estado para controlar a página atual
+  const [currentPage, setCurrentPage] = useState<'home' | 'blog' | 'admin' | 'article' | 'admin-login' | 'reset-password' | 'admin-editor'>('home');
+  const [currentArticleSlug, setCurrentArticleSlug] = useState<string>('');
+
+  // Monitor mudanças na página atual
+  useEffect(() => {
+    console.log('📄 [PAGE CHANGE] currentPage mudou para:', currentPage);
+    console.log('📄 [PAGE CHANGE] Stack trace:', new Error().stack);
+  }, [currentPage]);
+
+  // Função para atualizar a página baseada na URL
+  const updatePageFromURL = () => {
+    const { page, slug } = getCurrentPageFromURL();
+    console.log('🔄 [ROUTING] Atualizando página:', { page, slug });
+    console.log('🔄 [ROUTING] URL atual:', window.location.href);
+    setCurrentPage(page);
+    setCurrentArticleSlug(slug);
+  };
 
   // Verificar autenticação e rota ao carregar a página
   useEffect(() => {
@@ -39,9 +120,6 @@ export default function App() {
         console.log('📍 [APP] URL atual:', window.location.href);
         console.log('🕐 [APP] Timestamp:', new Date().toISOString());
         
-        // NÃO limpar dados automaticamente para manter a sessão do Supabase
-        console.log('⚠️ [APP] Pulando limpeza automática para manter sessão do Supabase');
-        
         // Primeiro verificar autenticação
         console.log('🔐 [APP] Verificando autenticação...');
         const hasActiveSession = await authService.checkSession();
@@ -49,45 +127,8 @@ export default function App() {
         setIsAdminAuthenticated(hasActiveSession);
         
         // Depois detectar rota baseada na URL
-        const path = window.location.pathname;
-        const search = window.location.search;
-        const hash = window.location.hash;
-        const fullUrl = window.location.href;
+        updatePageFromURL();
         
-        console.log('📍 Detectando rota:', { path, search, hash, fullUrl });
-        
-        // Verificar se há tokens de reset de senha na URL
-        const hasResetTokens = search.includes('access_token') || 
-                             hash.includes('access_token') || 
-                             fullUrl.includes('access_token') ||
-                             fullUrl.includes('refresh_token');
-        
-        if (path === '/admin') {
-          console.log('🎯 Rota /admin detectada');
-          // Agora isAdminAuthenticated já foi definido
-          if (hasActiveSession) {
-            // Verificar se há parâmetros de editor na URL
-            const urlParams = new URLSearchParams(search);
-            const editorMode = urlParams.get('editor');
-            console.log('📝 Editor mode:', editorMode);
-            
-            if (editorMode === 'new' || editorMode === 'edit') {
-              console.log('➡️ Redirecionando para admin-editor');
-              setCurrentPage('admin-editor');
-            } else {
-              console.log('➡️ Redirecionando para admin');
-              setCurrentPage('admin');
-            }
-          } else {
-            console.log('➡️ Redirecionando para admin-login');
-            setCurrentPage('admin-login');
-          }
-        } else if (path === '/reset-password' || hasResetTokens) {
-          console.log('➡️ Redirecionando para reset-password');
-          setCurrentPage('reset-password');
-        } else {
-          console.log('🏠 Mantendo página home');
-        }
       } catch (error) {
         console.error('❌ Erro ao inicializar app:', error);
         setIsAdminAuthenticated(false);
@@ -97,18 +138,31 @@ export default function App() {
     initializeApp();
   }, []);
 
+  // Escutar mudanças na URL (botão voltar/avançar do navegador)
+  useEffect(() => {
+    const handlePopState = () => {
+      console.log('🔄 [ROUTING] PopState event - atualizando página');
+      updatePageFromURL();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
 
   const handleAdminAccess = () => {
     if (isAdminAuthenticated) {
-      setCurrentPage('admin');
+      navigateToAdmin();
     } else {
-      setCurrentPage('admin-login');
+      // Para login, vamos usar uma URL especial
+      window.history.pushState({}, '', '/admin-login');
+      window.dispatchEvent(new PopStateEvent('popstate'));
     }
   };
 
   const handleAdminLogin = () => {
     setIsAdminAuthenticated(true);
-    setCurrentPage('admin');
+    navigateToAdmin();
   };
 
   const handleAdminLogout = async () => {
@@ -169,6 +223,24 @@ export default function App() {
     );
   }
 
+  if (currentPage === 'article') {
+    return (
+      <>
+        <ArticlePage slug={currentArticleSlug} onBack={navigateToBlog} />
+        <Toaster />
+      </>
+    );
+  }
+
+  if (currentPage === 'blog') {
+    return (
+      <>
+        <BlogPage onNavigateToHome={navigateToHome} onNavigateToArticle={navigateToArticle} />
+        <Toaster />
+      </>
+    );
+  }
+
   if (currentPage === 'admin-editor') {
     return (
       <>
@@ -176,10 +248,19 @@ export default function App() {
           article={null} 
           onSave={async (articleData: Partial<BlogArticle>, isPublish: boolean = false) => {
             try {
-              console.log('🔄 onSave chamado:', { isPublish, articleData: { title: articleData.title, published: articleData.published } });
+              console.log('🔄 onSave chamado:', { isPublish, articleData: { title: articleData.title, published: articleData.published, id: articleData.id } });
               
-              // Para autosave, apenas salvar sem redirecionar
-              const result = await blogService.createArticle(articleData);
+              let result: BlogArticle;
+              
+              // Se tem ID, é um artigo existente - usar updateArticle
+              if (articleData.id) {
+                console.log('📝 Atualizando artigo existente:', articleData.id);
+                result = await blogService.updateArticle(articleData.id, articleData) as BlogArticle;
+              } else {
+                console.log('🆕 Criando novo artigo');
+                result = await blogService.createArticle(articleData);
+              }
+              
               console.log('✅ Artigo salvo com sucesso:', result);
               
               if (isPublish) {
@@ -191,7 +272,7 @@ export default function App() {
                 console.log('💾 Autosave - NÃO redirecionando');
               }
               
-              return result; // Retornar o artigo criado para capturar o ID
+              return result; // Retornar o artigo criado/atualizado para capturar o ID
             } catch (error) {
               console.error('❌ Erro ao salvar artigo:', error);
               throw error; // Re-throw para o ArticleEditor mostrar o erro

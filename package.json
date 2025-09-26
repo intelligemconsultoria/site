@@ -63,6 +63,7 @@
             "netlify:build": "netlify build",
             "init:supabase": "node scripts/init-supabase.js",
             "create:admin": "node scripts/create-admin-user.js",
+            "create:newsletter-table": "node scripts/create-newsletter-table.js",
             "deploy": "netlify deploy --prod"
       }
 }
